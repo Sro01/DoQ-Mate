@@ -1,24 +1,40 @@
 import { useState } from 'react';
+import { Menu } from 'lucide-react';
 import ProfileCard from '../admin/profile/ProfileCard';
 import Dropdown from '../common/Dropdown';
 import NavItem from './NavItem';
+import SubMenuItem from './SubMenuItem';
 
 function Sidebar() {
   const [isLoggedIn] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <aside className="w-64 h-screen bg-gray-50 p-4 flex flex-col">
-      <ProfileCard
-        userName="김길동"
-        isLoggedIn={isLoggedIn}
-        onLogin={() => console.log('로그인')}
-        onRegister={() => console.log('회원가입')}
-        onPasswordChange={() => console.log('비밀번호 변경')}
-        onSettings={() => console.log('설정')}
-      />
+    <aside className={`h-screen bg-gray-200 p-4 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <div className="flex mb-4">
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="p-2 hover:bg-gray-300 rounded-full transition-colors"
+          aria-label="Toggle Sidebar"
+        >
+          <Menu size={24} className="text-gray-700" />
+        </button>
+      </div>
+
+      {!isCollapsed && (
+        <ProfileCard
+          userName="김길동"
+          isLoggedIn={isLoggedIn}
+          onLogin={() => console.log('로그인')}
+          onRegister={() => console.log('회원가입')}
+          onPasswordChange={() => console.log('비밀번호 변경')}
+          onSettings={() => console.log('설정')}
+        />
+      )}
 
       <nav className="mt-4 flex-1">
         <Dropdown
+          isCollapsed={isCollapsed}
           trigger={
             <NavItem
               icon="🤖"
@@ -27,15 +43,12 @@ function Sidebar() {
             />
           }
         >
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            챗봇 목록 보기
-          </button>
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            챗봇 생성
-          </button>
+          <SubMenuItem label="챗봇 목록 보기" />
+          <SubMenuItem label="챗봇 생성" />
         </Dropdown>
 
         <Dropdown
+          isCollapsed={isCollapsed}
           trigger={
             <NavItem
               icon="📊"
@@ -44,15 +57,12 @@ function Sidebar() {
             />
           }
         >
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            통계 대시보드
-          </button>
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            분석 리포트
-          </button>
+          <SubMenuItem label="통계 대시보드" />
+          <SubMenuItem label="분석 리포트" />
         </Dropdown>
 
         <Dropdown
+          isCollapsed={isCollapsed}
           trigger={
             <NavItem
               icon="⚙️"
@@ -61,12 +71,8 @@ function Sidebar() {
             />
           }
         >
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            일반 설정
-          </button>
-          <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors">
-            알림 설정
-          </button>
+          <SubMenuItem label="일반 설정" />
+          <SubMenuItem label="알림 설정" />
         </Dropdown>
       </nav>
     </aside>
