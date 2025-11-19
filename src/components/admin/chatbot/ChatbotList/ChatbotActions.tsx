@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import Button from '../../../common/Button';
 
+
 export interface ChatbotActionsProps {
   chatbotId: string;
   hasManual?: boolean;
@@ -25,12 +26,12 @@ function ChatbotActions({
             size="small"
             onClick={() => onEditManual?.(chatbotId)}
           >
-            메뉴얼 수정
+            매뉴얼 수정
           </Button>
           <button
             onClick={() => onDeleteManual?.(chatbotId)}
             className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-            aria-label="메뉴얼 삭제"
+            aria-label="매뉴얼 삭제"
           >
             <Trash2 size={18} className="text-gray-600" />
           </button>
@@ -41,7 +42,7 @@ function ChatbotActions({
           size="small"
           onClick={() => onAddManual?.(chatbotId)}
         >
-          메뉴얼 추가
+          매뉴얼 추가
         </Button>
       )}
     </div>

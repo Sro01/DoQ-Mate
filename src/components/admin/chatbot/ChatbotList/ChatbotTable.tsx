@@ -26,7 +26,7 @@ function ChatbotTable({
               챗봇 명칭
             </th>
             <th className="px-6 py-4 text-center font-bold text-black-700">
-              메뉴얼
+              매뉴얼
             </th>
             <th className="px-6 py-4 text-center font-bold text-black-700">
               상태

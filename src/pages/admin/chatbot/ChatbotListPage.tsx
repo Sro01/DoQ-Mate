@@ -11,13 +11,13 @@ function ChatbotListPage() {
   const [chatbots] = useState<Chatbot[]>([
     {
       chatbot_id: 'bot_0001',
-      name: '소비자 메뉴얼 챗봇',
+      name: '소비자 매뉴얼 챗봇',
       description: '',
       is_public: true
     },
     {
       chatbot_id: 'bot_0002',
-      name: '농가 메뉴얼 챗봇',
+      name: '농가 매뉴얼 챗봇',
       description: '테스트 바로가기',
       is_public: false
     }
@@ -28,18 +28,18 @@ function ChatbotListPage() {
   };
 
   const handleAddManual = (chatbotId: string) => {
-    console.log('메뉴얼 추가:', chatbotId);
-    // TODO: 메뉴얼 추가 로직
+    console.log('매뉴얼 추가:', chatbotId);
+    // TODO: 매뉴얼 추가 로직
   };
 
   const handleEditManual = (chatbotId: string) => {
-    console.log('메뉴얼 수정:', chatbotId);
-    // TODO: 메뉴얼 수정 로직
+    console.log('매뉴얼 수정:', chatbotId);
+    // TODO: 매뉴얼 수정 로직
   };
 
   const handleDeleteManual = (chatbotId: string) => {
-    console.log('메뉴얼 삭제:', chatbotId);
-    // TODO: 메뉴얼 삭제 확인 모달 + 삭제 로직
+    console.log('매뉴얼 삭제:', chatbotId);
+    // TODO: 매뉴얼 삭제 확인 모달 + 삭제 로직
   };
 
   return (
