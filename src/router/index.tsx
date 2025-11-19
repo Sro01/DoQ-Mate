@@ -34,16 +34,12 @@ export const protectedRoutes: RouteObject[] = [
     errorElement: <NotFoundPage />,
     children: [
       {
-        index: true,
+        path: "chatbotlist",
         element: <ChatbotListPage />,
       },
       {
         path: "chatbot",
         children: [
-          {
-            path: "list",
-            element: <ChatbotListPage />,
-          },
           {
             path: "create",
             element: <ChatbotCreatePage />,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import ProfileCard from '../admin/profile/ProfileCard';
 import Dropdown from '../common/Dropdown';
@@ -8,16 +9,17 @@ import SubMenuItem from './SubMenuItem';
 function Sidebar() {
   const [isLoggedIn] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   return (
-    <aside className={`h-screen bg-gray-200 p-4 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
-      <div className="flex mb-4">
+    <aside className={`h-screen bg-[#e9eef6] border-r border-gray-200 p-4 flex flex-col transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <div className="flex mb-6">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 hover:bg-gray-300 rounded-full transition-colors"
           aria-label="Toggle Sidebar"
         >
-          <Menu size={24} className="text-gray-700" />
+          <Menu size={24} className="text-gray-600" />
         </button>
       </div>
 
@@ -43,8 +45,8 @@ function Sidebar() {
             />
           }
         >
-          <SubMenuItem label="챗봇 목록 보기" />
-          <SubMenuItem label="챗봇 생성" />
+          <SubMenuItem label="챗봇 목록 보기" onClick={() => navigate('/chatbotlist')} />
+          <SubMenuItem label="챗봇 생성" onClick={() => navigate('/chatbot/create')} />
         </Dropdown>
 
         <Dropdown

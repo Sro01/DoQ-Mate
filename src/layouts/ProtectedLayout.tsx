@@ -1,22 +1,24 @@
 import { Outlet, Navigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
+import Header from '../components/layout/Header';
 
 interface ProtectedLayoutProps {
   isAuthenticated?: boolean;
 }
 
 function ProtectedLayout({ isAuthenticated = true }: ProtectedLayoutProps) {
-  // xÀ J@ ½° \øx ˜tÀ\ ¬ät	¸
+  // xï¿½ï¿½ J@ ï¿½ï¿½ \ï¿½x ï¿½tï¿½\ ï¿½ï¿½t	ï¿½
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <Sidebar />
-      <main className="flex-1 p-8">
+      <div className="flex-1 flex flex-col">
+        <Header />
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 }

@@ -14,21 +14,21 @@ function NavItem({ icon, label, hasDropdown = false, isActive = false, isCollaps
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 py-3 text-left transition-colors rounded ${
+      className={`w-full flex items-center gap-3 py-3 text-left transition-all duration-200 rounded-lg ${
         isCollapsed ? 'px-2 justify-center' : 'px-4'
       } ${
         isActive
-          ? 'bg-gray-300 text-gray-800 font-semibold'
-          : 'text-gray-700 hover:bg-gray-300'
+          ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold'
+          : 'text-gray-700 hover:bg-blue-50'
       }`}
       title={isCollapsed ? label : undefined}
     >
       <span className="text-xl">{icon}</span>
       {!isCollapsed && (
         <>
-          <span className="flex-1">{label}</span>
+          <span className="flex-1 font-medium">{label}</span>
           {hasDropdown && (
-            isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />
+            isOpen ? <ChevronDown size={18} className="text-blue-500" /> : <ChevronRight size={18} className="text-gray-400" />
           )}
         </>
       )}
