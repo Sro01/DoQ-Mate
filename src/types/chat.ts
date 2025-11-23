@@ -24,9 +24,10 @@ export type UncertaintyLevel = 'low' | 'medium' | 'high';
 
 export interface ChatResponse {
   answer: string;
-  supporting_chunks: SupportingChunk[];
-  uncertainty: UncertaintyLevel;
-  suggested_title?: string;
+  log_id: string;
+  // supporting_chunks: SupportingChunk[];
+  // uncertainty: UncertaintyLevel;
+  // suggested_title?: string;
 }
 
 export interface ChatItem {

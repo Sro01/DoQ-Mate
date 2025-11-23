@@ -9,6 +9,9 @@ export const ROUTES = {
   // 메인
   HOME: '/',
 
+  // 채팅
+  CHAT: (sessionId?: string) => sessionId ? `/chat/${sessionId}` : '/chat',
+
   // 인증 관련
   AUTH: {
     LOGIN: '/auth/login',

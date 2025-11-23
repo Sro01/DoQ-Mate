@@ -4,7 +4,7 @@ import type {
   FindUsernameResponseData,
   ResetPasswordRequest,
   ResetPasswordResponseData,
-} from '../types/auth/auth';
+} from '../../types/auth/auth';
 
 /**
  * 아이디 찾기 훅

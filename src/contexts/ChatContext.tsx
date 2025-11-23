@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import { useChatHistory } from '../hooks/useChatHistory';
+import { useChatHistory } from '../hooks/chat/useChatHistory';
 
 interface ChatContextType {
   chatHistories: ReturnType<typeof useChatHistory>['chatHistories'];
@@ -7,6 +7,7 @@ interface ChatContextType {
   currentSession: ReturnType<typeof useChatHistory>['currentSession'];
   createNewChat: ReturnType<typeof useChatHistory>['createNewChat'];
   selectChat: ReturnType<typeof useChatHistory>['selectChat'];
+  clearCurrentSession: ReturnType<typeof useChatHistory>['clearCurrentSession'];
   deleteChat: ReturnType<typeof useChatHistory>['deleteChat'];
   refreshChatHistories: ReturnType<typeof useChatHistory>['refreshChatHistories'];
 }

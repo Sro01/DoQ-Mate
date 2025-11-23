@@ -80,6 +80,13 @@ export function addMessageToSession(
   }
 
   saveAllChatHistories(histories);
+
+  // 커스텀 이벤트 발생 (useChatMessages에서 감지)
+  const event = new CustomEvent('chatStorageUpdated', {
+    detail: { sessionId }
+  });
+  window.dispatchEvent(event);
+
   return session;
 }
 

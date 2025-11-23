@@ -25,6 +25,10 @@ export const publicRoutes: RouteObject[] = [
         element: <ChatPage />,
       },
       {
+        path: "chat/:sessionId?",
+        element: <ChatPage />,
+      },
+      {
         path: "auth",
         children: [
           {

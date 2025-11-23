@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { ChatHistory } from '../types/chat';
+import type { ChatHistory } from '../../types/chat';
 import {
   getAllChatHistories,
   getChatHistory,
   createChatSession,
   deleteChatSession,
-} from '../utils/chatStorage';
+} from '../../utils/chatStorage';
 
 /**
  * 채팅 히스토리 목록 및 현재 세션을 관리하는 커스텀 훅
@@ -56,6 +56,13 @@ export function useChatHistory(defaultChatbotId: string = 'default') {
   }, []);
 
   /**
+   * 현재 세션 클리어 (세션 생성 없이)
+   */
+  const clearCurrentSession = useCallback(() => {
+    setCurrentSessionId(null);
+  }, []);
+
+  /**
    * 채팅 세션 삭제
    */
   const deleteChat = useCallback((sessionId: string) => {
@@ -88,6 +95,7 @@ export function useChatHistory(defaultChatbotId: string = 'default') {
     currentSession,
     createNewChat,
     selectChat,
+    clearCurrentSession,
     deleteChat,
     refreshChatHistories,
   };

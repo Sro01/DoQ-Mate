@@ -1,7 +1,9 @@
 import { SquarePen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useChatContext } from '../../contexts/ChatContext';
 import { updateSessionTitle, togglePinSession } from '../../utils/chatStorage';
 import ChatListItem from './ChatListItem';
+import { ROUTES } from '../../constants/routes';
 
 interface UserSidebarContentProps {
   isCollapsed: boolean;
@@ -10,21 +12,22 @@ interface UserSidebarContentProps {
 function UserSidebarContent({
   isCollapsed,
 }: UserSidebarContentProps) {
+  const navigate = useNavigate();
   const {
     chatHistories,
     currentSessionId,
-    createNewChat,
-    selectChat,
     deleteChat,
     refreshChatHistories,
   } = useChatContext();
 
   const handleNewChat = () => {
-    createNewChat();
+    // 홈으로 이동 (새 채팅 시작 화면)
+    navigate(ROUTES.HOME);
   };
 
   const handleChatSelect = (sessionId: string) => {
-    selectChat(sessionId);
+    // 해당 세션 URL로 이동
+    navigate(ROUTES.CHAT(sessionId));
   };
 
   const handleRename = (sessionId: string, newTitle: string) => {

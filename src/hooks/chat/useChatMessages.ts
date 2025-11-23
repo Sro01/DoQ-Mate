@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Message } from '../types/chat';
+import type { Message } from '../../types/chat';
 import {
   getChatHistory,
   addMessageToSession,
   updateSessionMessages,
-} from '../utils/chatStorage';
+} from '../../utils/chatStorage';
 
 interface UseChatMessagesProps {
   sessionId: string | null;
@@ -18,9 +18,9 @@ export function useChatMessages({ sessionId, onMessagesChange }: UseChatMessages
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 세션이 변경되면 해당 세션의 메시지 로드
-  useEffect(() => {
-    console.log('useChatMessages - sessionId 변경됨:', sessionId);
+  // localStorage에서 메시지를 로드하는 함수
+  const loadMessages = useCallback(() => {
+    console.log('useChatMessages - 메시지 로드 시도:', sessionId);
     if (sessionId) {
       const session = getChatHistory(sessionId);
       console.log('useChatMessages - 로드된 세션:', session);
@@ -36,6 +36,30 @@ export function useChatMessages({ sessionId, onMessagesChange }: UseChatMessages
       setMessages([]);
     }
   }, [sessionId]);
+
+  // 세션이 변경되면 해당 세션의 메시지 로드
+  useEffect(() => {
+    console.log('useChatMessages - sessionId 변경됨:', sessionId);
+    loadMessages();
+  }, [sessionId, loadMessages]);
+
+  // localStorage 변경 감지 (다른 컴포넌트에서 직접 추가한 메시지 반영)
+  useEffect(() => {
+    const handleStorageChange = (e: CustomEvent<{ sessionId: string }>) => {
+      console.log('useChatMessages - storage 변경 이벤트 수신:', e.detail);
+      if (e.detail.sessionId === sessionId) {
+        console.log('useChatMessages - 현재 세션의 변경사항 감지, 메시지 재로드');
+        loadMessages();
+      }
+    };
+
+    // 커스텀 이벤트 리스너 등록
+    window.addEventListener('chatStorageUpdated' as any, handleStorageChange as any);
+
+    return () => {
+      window.removeEventListener('chatStorageUpdated' as any, handleStorageChange as any);
+    };
+  }, [sessionId, loadMessages]);
 
   /**
    * 새 메시지 추가

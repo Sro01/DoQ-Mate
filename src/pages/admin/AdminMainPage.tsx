@@ -1,8 +1,14 @@
+import WelcomeTitle from '../../components/common/WelcomeTitle';
+
 function AdminMainPage() {
+  // TODO: 실제 사용자 이름은 Context나 전역 상태에서 가져오기
+  const username = '김길동';
+
   return (
     <main className="flex-1 p-8">
-      <h1 className="text-2xl font-bold mb-6">관리자 메인</h1>
-      <p className="text-gray-600">관리자 페이지에 오신 것을 환영합니다.</p>
+      <WelcomeTitle>
+        {username}님 환영합니다.
+      </WelcomeTitle>
     </main>
   );
 }

@@ -1,12 +1,37 @@
+import { useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useChatContext } from '../../contexts/ChatContext';
-import { useChatMessages } from '../../hooks/useChatMessages';
+import { useChatMessages } from '../../hooks/chat/useChatMessages';
+import { usePostUserMessage } from '../../hooks/chat/usePostUserMessage';
 import ChatInput from '../../components/chat/ChatInput';
 import UserMessage from '../../components/chat/UserMessage';
 import BotMessage from '../../components/chat/BotMessage';
-import { simulateBotResponse } from '../../utils/dummyData';
+import WelcomeTitle from '../../components/common/WelcomeTitle';
+import { ROUTES } from '../../constants/routes';
+import { addMessageToSession } from '../../utils/chatStorage';
+import type { Message } from '../../types/chat';
 
 function ChatPage() {
-  const { currentSessionId, createNewChat, refreshChatHistories } = useChatContext();
+  const { sessionId } = useParams<{ sessionId?: string }>();
+  const navigate = useNavigate();
+  const { currentSessionId, createNewChat, selectChat, clearCurrentSession, refreshChatHistories } = useChatContext();
+  const { postUserMessage } = usePostUserMessage();
+
+  // URL의 sessionId와 현재 선택된 세션 동기화
+  useEffect(() => {
+    if (sessionId) {
+      // URL에 sessionId가 있으면 해당 세션 선택
+      // (이미 선택되어 있으면 selectChat이 내부적으로 무시할 수도 있음)
+      if (sessionId !== currentSessionId) {
+        selectChat(sessionId);
+      }
+    } else {
+      // URL에 sessionId가 없으면 (/ 경로) 세션 클리어
+      if (currentSessionId) {
+        clearCurrentSession();
+      }
+    }
+  }, [sessionId]); // currentSessionId를 의존성에서 제거하여 무한 루프 방지
 
   const {
     messages,
@@ -17,33 +42,47 @@ function ChatPage() {
     setIsLoading,
   } = useChatMessages({ sessionId: currentSessionId, onMessagesChange: refreshChatHistories });
 
-  const handleSendMessage = (message: string, chatbotId: string) => {
+  const handleSendMessage = async (message: string, chatbotId: string) => {
     console.log('메시지 전송:', message, '챗봇 ID:', chatbotId);
 
     // 세션이 없으면 새 채팅 생성
     if (!currentSessionId) {
-      createNewChat(chatbotId);
-      // 새 세션이 생성된 후에는 다음 렌더링에서 메시지가 저장되므로
-      // useChatMessages가 새 세션을 감지할 때까지 기다림
-      setTimeout(() => {
-        sendUserMessage(message);
-        setIsLoading(true);
-        simulateBotResponse(message, (response) => {
-          addBotResponse(response);
-          setIsLoading(false);
-        }, 1000);
-      }, 100);
+      const newSession = createNewChat(chatbotId);
+      const newSessionId = newSession.session_id;
+
+      // 사용자 메시지를 새 세션에 직접 저장
+      const userMessage: Message = {
+        role: 'user',
+        content: message.trim(),
+      };
+      addMessageToSession(newSessionId, userMessage);
+
+      // URL을 새 세션 ID로 업데이트 (replace: true로 히스토리 중복 방지)
+      navigate(ROUTES.CHAT(newSessionId), { replace: true });
+
+      // 실제 API 호출
+      setIsLoading(true);
+      const botAnswer = await postUserMessage(message, chatbotId, newSessionId);
+      if (botAnswer) {
+        addMessageToSession(newSessionId, {
+          role: 'assistant',
+          content: botAnswer,
+        });
+      }
+      setIsLoading(false);
       return;
     }
 
+    // 기존 세션에 메시지 전송
     sendUserMessage(message);
 
-    // 더미 봇 응답 시뮬레이션
+    // 실제 API 호출
     setIsLoading(true);
-    simulateBotResponse(message, (response) => {
-      addBotResponse(response);
-      setIsLoading(false);
-    }, 1000);
+    const botAnswer = await postUserMessage(message, chatbotId, currentSessionId);
+    if (botAnswer) {
+      addBotResponse(botAnswer);
+    }
+    setIsLoading(false);
   };
 
   const handleEditMessage = (index: number, newContent: string) => {
@@ -93,6 +132,10 @@ function ChatPage() {
         // 메시지가 없을 때
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-4xl">
+            <WelcomeTitle>
+              안녕하세요 👋 도움 받을 챗봇을 선택 후, <br/> 
+              궁금한 점을 물어보시면 바로 알려드릴게요!
+            </WelcomeTitle>
             <ChatInput onSendMessage={handleSendMessage} />
           </div>
         </div>

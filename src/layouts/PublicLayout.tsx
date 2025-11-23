@@ -3,7 +3,6 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import UserSidebarContent from '../components/layout/UserSidebarContent';
 import Header from '../components/layout/Header';
-import ChatPage from '../pages/chat/ChatPage';
 import { ChatProvider } from '../contexts/ChatContext';
 
 function PublicLayout() {
@@ -22,9 +21,6 @@ function PublicLayout() {
     );
   }
 
-  // 메인 페이지(/)인 경우 ChatPage를 렌더링
-  const isMainPage = location.pathname === '/';
-
   return (
     <ChatProvider>
       <div className="min-h-screen bg-white">
@@ -33,11 +29,7 @@ function PublicLayout() {
         </Sidebar>
         <div className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           <Header />
-          {isMainPage ? (
-            <ChatPage />
-          ) : (
-            <Outlet />
-          )}
+          <Outlet />
         </div>
       </div>
     </ChatProvider>
