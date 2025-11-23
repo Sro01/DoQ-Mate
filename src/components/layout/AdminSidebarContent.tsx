@@ -4,6 +4,7 @@ import ProfileCard from '../admin/profile/ProfileCard';
 import Dropdown from '../common/Dropdown';
 import NavItem from './NavItem';
 import SubMenuItem from './SubMenuItem';
+import { ROUTES } from '../../constants/routes';
 
 interface AdminSidebarContentProps {
   isCollapsed: boolean;
@@ -35,8 +36,8 @@ function AdminSidebarContent({ isCollapsed }: AdminSidebarContentProps) {
             />
           }
         >
-          <SubMenuItem label="챗봇 목록 보기" onClick={() => navigate('/admin/chatbotlist')} />
-          <SubMenuItem label="챗봇 생성" onClick={() => navigate('/admin/chatbot/create')} />
+          <SubMenuItem label="챗봇 목록 보기" onClick={() => navigate(ROUTES.ADMIN.CHATBOT_LIST)} />
+          <SubMenuItem label="챗봇 생성" onClick={() => navigate(ROUTES.ADMIN.CHATBOT_CREATE)} />
         </Dropdown>
 
         <Dropdown
@@ -63,9 +64,9 @@ function AdminSidebarContent({ isCollapsed }: AdminSidebarContentProps) {
             />
           }
         >
-          <SubMenuItem label="가입 신청 관리" onClick={() => navigate('/admin/signup-management')} />
+          <SubMenuItem label="가입 신청 관리" onClick={() => navigate(ROUTES.ADMIN.SIGNUP_MANAGEMENT)} />
           <SubMenuItem label="관리자 목록" />
-          <SubMenuItem label="프로필 설정" onClick={() => navigate('/admin/settings')} />
+          <SubMenuItem label="프로필 설정" onClick={() => navigate(ROUTES.ADMIN.SETTINGS)} />
         </Dropdown>
       </nav>
     </>

@@ -4,6 +4,9 @@ import ProtectedLayout from '../layouts/ProtectedLayout';
 import NotFoundPage from '../pages/error/NotFoundPage';
 import LoginPage from '../pages/auth/LoginPage';
 import SignupPage from '../pages/auth/SignupPage';
+import FindUsernamePage from '../pages/auth/FindUsernamePage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
+import AdminMainPage from '../pages/admin/AdminMainPage';
 import ChatbotListPage from '../pages/admin/chatbot/ChatbotListPage';
 import ChatbotCreatePage from '../pages/admin/chatbot/ChatbotCreatePage';
 import ManualPage from '../pages/admin/chatbot/ManualPage';
@@ -22,12 +25,25 @@ export const publicRoutes: RouteObject[] = [
         element: <ChatPage />,
       },
       {
-        path: "login",
-        element: <LoginPage />,
-      },
-      {
-        path: "signup",
-        element: <SignupPage />,
+        path: "auth",
+        children: [
+          {
+            path: "login",
+            element: <LoginPage />,
+          },
+          {
+            path: "signup",
+            element: <SignupPage />,
+          },
+          {
+            path: "find-username",
+            element: <FindUsernamePage />,
+          },
+          {
+            path: "reset-password",
+            element: <ResetPasswordPage />,
+          },
+        ],
       },
     ],
   },
@@ -40,6 +56,10 @@ export const protectedRoutes: RouteObject[] = [
     element: <ProtectedLayout />,
     errorElement: <NotFoundPage />,
     children: [
+      {
+        index: true,
+        element: <AdminMainPage />,
+      },
       {
         path: "chatbotlist",
         element: <ChatbotListPage />,

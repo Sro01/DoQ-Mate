@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
-import Logo from '../../components/common/Logo';
-import Container from '../../components/common/Container';
 import Input from '../../components/common/Input';
 import PasswordInput from '../../components/common/PasswordInput';
+import TextLink from '../../components/common/TextLink';
+import AuthPageLayout from '../../layouts/AuthPageLayout';
+import { ROUTES } from '../../constants/routes';
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -92,8 +93,8 @@ function SignupPage() {
 
     if (!formData.password) {
       newErrors.password = '비밀번호를 입력해주세요';
-    } else if (formData.password.length < 6) {
-      newErrors.password = '비밀번호는 6자 이상이어야 합니다';
+    } else if (formData.password.length < 4) {
+      newErrors.password = '비밀번호는 4자 이상이어야 합니다';
     }
 
     if (!formData.confirmPassword) {
@@ -124,7 +125,7 @@ function SignupPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       alert('가입 신청이 완료되었습니다.\n관리자 승인 후 로그인이 가능합니다.');
-      navigate('/login');
+      navigate(ROUTES.AUTH.LOGIN);
     } catch (error) {
       alert('가입 신청에 실패했습니다. 다시 시도해주세요.');
     } finally {
@@ -133,13 +134,10 @@ function SignupPage() {
   };
 
   return (
-    <Container fullHeight centered maxWidth="md" padding="medium" shadow="lg" rounded="2xl">
-      <div className="text-center mb-8">
-        <Logo className="justify-center mb-4" fontSize={30} />
-        <h1 className="text-2xl font-bold text-gray-800">회원가입</h1>
-        <p className="text-sm text-gray-500 mt-2">관리자 승인 후 사용 가능합니다</p>
-      </div>
-
+    <AuthPageLayout
+      title="회원가입"
+      subtitle="관리자 승인 후 사용 가능합니다"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 아이디 */}
         <div>
@@ -180,7 +178,7 @@ function SignupPage() {
           onChange={handleInputChange}
           label="비밀번호"
           error={errors.password}
-          placeholder="비밀번호 입력 (6자 이상)"
+          placeholder="비밀번호 입력 (4자 이상)"
           required
         />
 
@@ -209,8 +207,8 @@ function SignupPage() {
           required
         />
 
-        {/* 버튼들 */}
-        <div className="space-y-3 pt-4">
+        {/* 가입 신청 버튼 */}
+        <div className="pt-4">
           <Button
             type="submit"
             variant="primary"
@@ -219,17 +217,17 @@ function SignupPage() {
           >
             {isSubmitting ? '신청 중...' : '가입 신청'}
           </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            className="w-full"
-            onClick={() => navigate('/login')}
-          >
-            로그인 페이지로
-          </Button>
+        </div>
+
+        {/* 로그인 안내 */}
+        <div className="text-center text-sm text-gray-600 pt-2">
+          이미 계정이 있으신가요?{' '}
+          <TextLink color="blue" onClick={() => navigate(ROUTES.AUTH.LOGIN)}>
+            로그인 하기
+          </TextLink>
         </div>
       </form>
-    </Container>
+    </AuthPageLayout>
   );
 }
 

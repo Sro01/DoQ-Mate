@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ROUTES } from '../../constants/routes';
 
 interface LogoProps {
   fontSize?: number; // px 단위
@@ -14,6 +15,7 @@ function Logo({
   clickable = true
 }: LogoProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogoClick = () => {
     if (!clickable) return;
@@ -21,7 +23,8 @@ function Logo({
     if (onClick) {
       onClick();
     } else {
-      navigate('/admin/chatbotlist');
+      const isAdminPage = location.pathname.startsWith('/admin');
+      navigate(isAdminPage ? ROUTES.ADMIN.MAIN : ROUTES.HOME);
     }
   };
 

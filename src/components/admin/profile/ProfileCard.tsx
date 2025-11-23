@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button';
+import { ROUTES } from '../../../constants/routes';
 
 interface ProfileCardProps {
   userName?: string;
@@ -16,19 +17,19 @@ function ProfileCard({
     // TODO: API 호출 (POST /api/auth/logout) 또는 토큰 삭제
     // TODO: 로그인 상태 전역 관리 (Context/Store)에서 로그아웃 처리
     console.log('로그아웃');
-    navigate('/login');
+    navigate(ROUTES.AUTH.LOGIN);
   };
 
   const handleSettings = () => {
-    navigate('/admin/settings');
+    navigate(ROUTES.ADMIN.SETTINGS);
   };
 
   const handleLogin = () => {
-    navigate('/login');
+    navigate(ROUTES.AUTH.LOGIN);
   };
 
   const handleRegister = () => {
-    navigate('/signup');
+    navigate(ROUTES.AUTH.SIGNUP);
   };
   return (
     <div className="bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg p-6 text-white">

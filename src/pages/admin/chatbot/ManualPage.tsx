@@ -5,6 +5,7 @@ import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotT
 import ManualFileList from '../../../components/admin/manual/ManualFileList';
 import type { Chatbot } from '../../../types/admin/chatbot';
 import type { Manual, UploadingFile } from '../../../types/admin/manual';
+import { ROUTES } from '../../../constants/routes';
 
 function ManualPage() {
   const navigate = useNavigate();
@@ -84,11 +85,11 @@ function ManualPage() {
   const handleSubmit = () => {
     console.log('등록할 파일:', uploadingFiles);
     // TODO: 매뉴얼 등록 로직
-    navigate('/admin/chatbotlist');
+    navigate(ROUTES.ADMIN.CHATBOT_LIST);
   };
 
   const handleCancel = () => {
-    navigate('/admin/chatbotlist');
+    navigate(ROUTES.ADMIN.CHATBOT_LIST);
   };
 
   return (

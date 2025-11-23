@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Chatbot } from '../../../types/admin/chatbot';
 import Button from '../../../components/common/Button';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
+import { ROUTES } from '../../../constants/routes';
 
 function ChatbotListPage() {
   const navigate = useNavigate();
@@ -28,11 +29,11 @@ function ChatbotListPage() {
   ]);
 
   const handleCreateChatbot = () => {
-    navigate('/admin/chatbot/create');
+    navigate(ROUTES.ADMIN.CHATBOT_CREATE);
   };
 
   const handleAddManual = (chatbotId: string) => {
-    navigate(`/admin/chatbot/${chatbotId}/manual`);
+    navigate(ROUTES.ADMIN.CHATBOT_MANUAL(chatbotId));
   };
 
   const handleEditManual = (chatbotId: string) => {

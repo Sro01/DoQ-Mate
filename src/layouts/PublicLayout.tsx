@@ -10,8 +10,7 @@ function PublicLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
-  // 로그인/회원가입 페이지는 Sidebar와 Header 없이 표시
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const isAuthPage = location.pathname.startsWith('/auth');
 
   if (isAuthPage) {
     return (
@@ -23,7 +22,7 @@ function PublicLayout() {
     );
   }
 
-  // 메인 페이지(/)인 경우 ChatPage를 직접 렌더링
+  // 메인 페이지(/)인 경우 ChatPage를 렌더링
   const isMainPage = location.pathname === '/';
 
   return (
