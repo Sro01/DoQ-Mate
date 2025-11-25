@@ -1,18 +1,22 @@
 import { SquarePen } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useChatContext } from '../../contexts/ChatContext';
 import { updateSessionTitle, togglePinSession } from '../../utils/chatStorage';
 import ChatListItem from './ChatListItem';
 import { ROUTES } from '../../constants/routes';
+import TextLink from '../common/TextLink';
+import { isAuthenticated } from '../../utils/permissions';
+import { clearAuthData } from '../../utils/authStorage';
 
-interface UserSidebarContentProps {
+interface ChatSidebarContentProps {
   isCollapsed: boolean;
 }
 
-function UserSidebarContent({
+function ChatSidebarContent({
   isCollapsed,
-}: UserSidebarContentProps) {
+}: ChatSidebarContentProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     chatHistories,
     currentSessionId,
@@ -44,6 +48,11 @@ function UserSidebarContent({
   const handlePin = (sessionId: string) => {
     togglePinSession(sessionId);
     refreshChatHistories();
+  };
+
+  const handleLogout = () => {
+    clearAuthData();
+    navigate(ROUTES.HOME);
   };
 
   const sortedChats = [...chatHistories].sort((a, b) => {
@@ -100,8 +109,30 @@ function UserSidebarContent({
           )}
         </div>
       </nav>
+
+      <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        {!isCollapsed && (
+          <div className="px-4 py-2 border-t border-gray-200">
+            {isAuthenticated() ? (
+              <TextLink
+                color="blue"
+                onClick={handleLogout}
+              >
+                관리자 로그아웃
+              </TextLink>
+            ) : (
+              <TextLink
+                color="blue"
+                onClick={() => navigate(ROUTES.AUTH.LOGIN, { state: { from: location } })}
+              >
+                관리자 로그인
+              </TextLink>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
-export default UserSidebarContent;
+export default ChatSidebarContent;

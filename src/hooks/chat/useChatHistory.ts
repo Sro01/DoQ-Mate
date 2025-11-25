@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { ChatHistory } from '../../types/chat';
+import type { ChatHistory } from '../../types/chat/chat';
 import {
   getAllChatHistories,
   getChatHistory,

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Chatbot } from '../../../types/admin/chatbot';
 import Button from '../../../components/common/Button';
+import PageHeader from '../../../components/common/PageHeader';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
 import { ROUTES } from '../../../constants/routes';
 
@@ -60,11 +61,11 @@ function ChatbotListPage() {
   return (
     <>
       <main className="flex-1 p-8">
-        <div className="flex justify-between mb-6">
-          <h1 className="text-2xl font-bold">챗봇 리스트</h1>
-            <Button variant="outline" onClick={handleCreateChatbot}>
-              챗봇 생성
-            </Button>
+        <div className="flex justify-between items-start mb-6">
+          <PageHeader title="챗봇 리스트" />
+          <Button variant="outline" onClick={handleCreateChatbot}>
+            챗봇 생성
+          </Button>
         </div>
 
         <ChatbotTable

@@ -1,11 +1,13 @@
+import { MonitorCog } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../common/Logo';
-
-// interface HeaderProps {
-//   title?: string;
-//   children?: React.ReactNode;
-// }
+import { ROUTES } from '../../constants/routes';
+import { isAuthenticated } from '../../utils/permissions';
 
 function Header() {
+  const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
+
   return (
     <header className="px-8 py-5 flex items-center justify-between">
       {/* 왼쪽: 로고 */}
@@ -19,9 +21,17 @@ function Header() {
       </div> */}
 
       {/* 오른쪽: 액션 버튼들 */}
-      {/* <div className="flex gap-3">
-        {children}
-      </div> */}
+      <div className="flex gap-3">
+        {isLoggedIn && (
+          <button
+            onClick={() => navigate(ROUTES.ADMIN.MAIN)}
+            className=" hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+            aria-label="관리자 페이지"
+          >
+            <MonitorCog size={24} className="text-blue-500" />
+          </button>
+        )}
+      </div>
     </header>
   );
 }

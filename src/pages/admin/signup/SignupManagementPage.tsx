@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Signup } from '../../../types/auth/signup';
 import Button from '../../../components/common/Button';
+import PageHeader from '../../../components/common/PageHeader';
 import ConfirmModal from '../../../components/common/ConfirmModal';
 
 function SignupManagementPage() {
@@ -72,7 +73,7 @@ function SignupManagementPage() {
   return (
     <>
       <main className="flex-1 p-8">
-        <h1 className="text-2xl font-bold mb-6">가입 신청 관리</h1>
+        <PageHeader title="가입 신청 관리" />
 
         {signups.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">

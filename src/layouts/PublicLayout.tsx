@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
-import UserSidebarContent from '../components/layout/UserSidebarContent';
+import ChatSidebarContent from '../components/layout/ChatSidebarContent';
 import Header from '../components/layout/Header';
 import { ChatProvider } from '../contexts/ChatContext';
 
@@ -25,7 +25,7 @@ function PublicLayout() {
     <ChatProvider>
       <div className="min-h-screen bg-white">
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}>
-          <UserSidebarContent isCollapsed={isCollapsed} />
+          <ChatSidebarContent isCollapsed={isCollapsed} />
         </Sidebar>
         <div className={`flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-20' : 'ml-64'}`}>
           <Header />

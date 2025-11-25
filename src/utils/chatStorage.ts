@@ -1,4 +1,4 @@
-import type { ChatHistory, Message } from '../types/chat';
+import type { ChatHistory, Message } from '../types/chat/chat';
 
 const STORAGE_KEY = 'doqmate_chat_histories';
 

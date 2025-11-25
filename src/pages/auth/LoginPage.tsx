@@ -1,20 +1,25 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import PasswordInput from '../../components/common/PasswordInput';
 import TextLink from '../../components/common/TextLink';
 import AuthPageLayout from '../../layouts/AuthPageLayout';
 import { ROUTES } from '../../constants/routes';
+import { useLogin, useGetMe } from '../../hooks/auth/useAuth';
+import { setAccessToken, setAdminId } from '../../utils/authStorage';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading: isLoginLoading, error: loginError } = useLogin();
+  const { getMe } = useGetMe();
+
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,18 +53,39 @@ function LoginPage() {
       return;
     }
 
-    setIsSubmitting(true);
+    // 임시 테스트용: 아이디에 'test'가 포함되면 더미 데이터로 로그인
+    if (formData.username.includes('test')) {
+      setAccessToken('dummy-test-token');
+      setAdminId('test-admin-id');
+
+      const from = location.state?.from?.pathname || ROUTES.ADMIN.CHATBOT_LIST;
+      navigate(from, { replace: true });
+      return;
+    }
 
     try {
-      // TODO: API 호출 (POST /api/auth/login)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 로그인 API 호출
+      const loginResult = await login(formData.username, formData.password);
 
-      // TODO: 로그인 성공 시 토큰 저장 및 페이지 이동
-      navigate(ROUTES.ADMIN.CHATBOT_LIST);
+      if (!loginResult) {
+        setErrors({ username: '아이디 또는 비밀번호가 올바르지 않습니다' });
+        return;
+      }
+
+      // 액세스 토큰 저장
+      setAccessToken(loginResult.access_token);
+
+      // 사용자 정보 조회 후 admin_id 저장
+      const userInfo = await getMe();
+      if (userInfo) {
+        setAdminId(userInfo.admin_id);
+      }
+
+      // 이전 페이지로 리다이렉트 또는 기본 admin 페이지로 이동
+      const from = location.state?.from?.pathname || ROUTES.ADMIN.CHATBOT_LIST;
+      navigate(from, { replace: true });
     } catch (error) {
       setErrors({ username: '아이디 또는 비밀번호가 올바르지 않습니다' });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -100,9 +126,9 @@ function LoginPage() {
             type="submit"
             variant="primary"
             className="w-full"
-            disabled={isSubmitting}
+            disabled={isLoginLoading}
           >
-            {isSubmitting ? '로그인 중...' : '로그인'}
+            {isLoginLoading ? '로그인 중...' : '로그인'}
           </Button>
         </div>
 

@@ -5,7 +5,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 function Button({ children, variant, size = 'medium', className = '', ...props }: ButtonProps) {
-  let baseClasses = "font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md";
+  // rounded 클래스를 className에서 추출
+  const hasRoundedClass = className.includes('rounded');
+  const baseClasses = hasRoundedClass
+    ? "font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+    : "font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md";
+
   let variantClasses = "";
   let sizeClasses = "";
 

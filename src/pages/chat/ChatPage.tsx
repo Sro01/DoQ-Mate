@@ -9,7 +9,7 @@ import BotMessage from '../../components/chat/BotMessage';
 import WelcomeTitle from '../../components/common/WelcomeTitle';
 import { ROUTES } from '../../constants/routes';
 import { addMessageToSession } from '../../utils/chatStorage';
-import type { Message } from '../../types/chat';
+import type { Message } from '../../types/chat/chat';
 
 function ChatPage() {
   const { sessionId } = useParams<{ sessionId?: string }>();
