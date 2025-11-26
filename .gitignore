@@ -108,3 +108,7 @@ bundle-analyzer-report.html
 *.zip
 *.tar.gz
 *.rar
+
+# Markdown
+CLAUDE.md
+api.md

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import PageHeader from '../../../components/common/PageHeader';
 import Button from '../../../components/common/Button';
-import { useGetMe } from '../../../hooks/auth/useAuth';
+import PasswordInput from '../../../components/common/PasswordInput';
+import { useGetMe, useChangePassword } from '../../../hooks/auth/useAuth';
 
 function ProfileSettingsPage() {
   const [profileData, setProfileData] = useState({
@@ -12,8 +13,16 @@ function ProfileSettingsPage() {
     last_login_at: '',
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordErrors, setPasswordErrors] = useState<{ [key: string]: string }>({});
 
   const { getMe } = useGetMe();
+  const { changePassword, isLoading: isPasswordLoading } = useChangePassword();
 
   useEffect(() => {
     loadProfile();
@@ -46,9 +55,64 @@ function ProfileSettingsPage() {
     });
   };
 
-  const handlePasswordChange = () => {
-    // TODO: 비밀번호 변경 모달 또는 페이지로 이동
-    alert('비밀번호 변경 기능은 준비 중입니다.');
+  const handlePasswordChangeClick = () => {
+    setIsChangingPassword(true);
+    setPasswordData({
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setPasswordErrors({});
+  };
+
+  const handlePasswordCancel = () => {
+    setIsChangingPassword(false);
+    setPasswordData({
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setPasswordErrors({});
+  };
+
+  const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+    if (passwordErrors[name]) {
+      setPasswordErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!passwordData.oldPassword) {
+      newErrors.oldPassword = '현재 비밀번호를 입력해주세요';
+    }
+    if (!passwordData.newPassword) {
+      newErrors.newPassword = '새 비밀번호를 입력해주세요';
+    } else if (passwordData.newPassword.length < 4) {
+      newErrors.newPassword = '비밀번호는 4자 이상이어야 합니다';
+    }
+    if (!passwordData.confirmPassword) {
+      newErrors.confirmPassword = '새 비밀번호 확인을 입력해주세요';
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setPasswordErrors(newErrors);
+      return;
+    }
+
+    const success = await changePassword(passwordData.oldPassword, passwordData.newPassword);
+
+    if (success) {
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+      handlePasswordCancel();
+    } else {
+      setPasswordErrors({ oldPassword: '비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.' });
+    }
   };
 
   if (isLoading) {
@@ -93,15 +157,77 @@ function ProfileSettingsPage() {
           </div>
 
           {/* 비밀번호 */}
-          <div className="flex items-center">
-            <label className="w-32 text-sm font-semibold text-gray-700">비밀번호</label>
-            <div className="flex-1 flex items-center gap-3">
-              <p className="text-gray-900">••••••••</p>
-              <Button size="small" variant="outline" onClick={handlePasswordChange}>
-                비밀번호 변경
-              </Button>
+          {!isChangingPassword ? (
+            <div className="flex items-center">
+              <label className="w-32 text-sm font-semibold text-gray-700">비밀번호</label>
+              <div className="flex-1 flex items-center gap-3">
+                <p className="text-gray-900">••••••••</p>
+                <Button size="small" variant="outline" onClick={handlePasswordChangeClick}>
+                  비밀번호 변경
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="border border-gray-200 rounded-lg p-6 space-y-4">
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">비밀번호 변경</h3>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  현재 비밀번호
+                </label>
+                <PasswordInput
+                  name="oldPassword"
+                  value={passwordData.oldPassword}
+                  onChange={handlePasswordInputChange}
+                  error={passwordErrors.oldPassword}
+                  placeholder="현재 비밀번호를 입력하세요"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  새 비밀번호
+                </label>
+                <PasswordInput
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordInputChange}
+                  error={passwordErrors.newPassword}
+                  placeholder="새 비밀번호를 입력하세요 (4자 이상)"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  새 비밀번호 확인
+                </label>
+                <PasswordInput
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordInputChange}
+                  error={passwordErrors.confirmPassword}
+                  placeholder="새 비밀번호를 다시 입력하세요"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="primary"
+                  onClick={handlePasswordSubmit}
+                  disabled={isPasswordLoading}
+                >
+                  {isPasswordLoading ? '변경 중...' : '변경하기'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handlePasswordCancel}
+                  disabled={isPasswordLoading}
+                >
+                  취소
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* 가입 일시 */}
           <div className="flex items-center">

@@ -54,7 +54,8 @@ export interface MeResponseData {
 // ============================================
 
 export interface ChangePasswordRequest {
-  old_password: string;
+  admin_id: string;
+  current_password: string;
   new_password: string;
 }
 
@@ -71,6 +72,7 @@ export interface FindUsernameRequest {
 export interface FindUsernameResponseData {
   candidates: {
     username_masked: string;
+    status: string;
   }[];
 }
 

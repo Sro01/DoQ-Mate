@@ -6,7 +6,7 @@ import TextLink from '../../components/common/TextLink';
 import AuthPageLayout from '../../layouts/AuthPageLayout';
 import TabNavigation from '../../components/auth/TabNavigation';
 import ResultBox from '../../components/auth/ResultBox';
-import { useResetPassword } from '../../hooks/auth/useFindAccount';
+import { useResetPassword } from '../../hooks/auth/useAuth';
 import { ROUTES } from '../../constants/routes';
 
 function ResetPasswordPage() {
