@@ -3,19 +3,9 @@ import ChatbotTableRow from './ChatbotTableRow';
 
 interface ChatbotTableProps {
   chatbots: Chatbot[];
-  onAddManual?: (chatbotId: string) => void;
-  onEditManual?: (chatbotId: string) => void;
-  onDeleteManual?: (chatbotId: string) => void;
-  onTogglePublic?: (chatbotId: string, isPublic: boolean) => void;
 }
 
-function ChatbotTable({
-  chatbots,
-  onAddManual,
-  onEditManual,
-  onDeleteManual,
-  onTogglePublic
-}: ChatbotTableProps) {
+function ChatbotTable({ chatbots }: ChatbotTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <table className="w-full table-fixed">
@@ -51,10 +41,6 @@ function ChatbotTable({
                 key={chatbot.chatbot_id}
                 chatbot={chatbot}
                 index={index}
-                onAddManual={onAddManual}
-                onEditManual={onEditManual}
-                onDeleteManual={onDeleteManual}
-                onTogglePublic={onTogglePublic}
               />
             ))
           )}

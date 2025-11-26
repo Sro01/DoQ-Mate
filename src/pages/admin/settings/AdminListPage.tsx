@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Admin } from '../../../types/auth/auth';
 import Button from '../../../components/common/Button';
 import PageHeader from '../../../components/common/PageHeader';
-import ConfirmModal from '../../../components/common/ConfirmModal';
+import Modal from '../../../components/common/Modal';
 import { useGetAdmins, useDeleteAdmin } from '../../../hooks/admin/useAdmin';
 
 function AdminListPage() {
@@ -134,7 +134,7 @@ function AdminListPage() {
       </main>
 
       {/* 추방 확인 모달 */}
-      <ConfirmModal
+      <Modal
         isOpen={showRemoveModal}
         title="관리자 추방"
         message={`${selectedAdmin?.name}(${selectedAdmin?.username})님을 추방하시겠습니까?`}

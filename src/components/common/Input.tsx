@@ -20,6 +20,7 @@ function Input({
       {label && (
         <label htmlFor={props.id} className="block text-sm font-medium text-gray-700 mb-1">
           {label} {required && '*'}
+          {!required && <span className="text-gray-400 font-normal ml-1">(선택)</span>}
         </label>
       )}
       <input

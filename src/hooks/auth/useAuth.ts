@@ -134,7 +134,7 @@ export function useChangePassword() {
 
     try {
       const response = await apiClient.patch<ApiResponse<void>>(
-        '/auth/me', // TODO: /auth/me/password가 맞음!! 나중에 수정 필요
+        '/auth/me/password',
         requestBody
       );
 

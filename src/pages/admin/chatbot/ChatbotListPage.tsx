@@ -1,61 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Chatbot } from '../../../types/admin/chatbot';
 import Button from '../../../components/common/Button';
 import PageHeader from '../../../components/common/PageHeader';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
 import { ROUTES } from '../../../constants/routes';
+import { useGetChatbots, useUpdateChatbot } from '../../../hooks/chatbot/useChatbot';
+import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
 
 function ChatbotListPage() {
   const navigate = useNavigate();
+  const [chatbots, setChatbots] = useState<Chatbot[]>([]);
 
-  // 임시 데이터 (나중에 API 호출로 대체)
-  const [chatbots, setChatbots] = useState<Chatbot[]>([
-  {
-    "chatbot_id": "bot_0001", // 서버 자동 생성
-    "name": "사내 매뉴얼 챗봇",
-    "description": "사내 매뉴얼 관련한 응답을 주는 챗봇",
-    "is_public": true,
-    "tag": "직원",
-    "created_at": "2025-01-01T00:00:00Z",
-  },
-  {
-    "chatbot_id": "bot_0002",
-    "name": "외부 고객 FAQ 봇",
-    "description": "외부 고객용 FAQ 응답 챗봇",
-    "is_public": false,
-    "tag": "소비자",
-    "created_at": "2025-02-15T00:00:00Z",
-  }
-  ]);
+  const { getChatbots, isLoading: isLoadingList } = useGetChatbots();
+  const { updateChatbot, isLoading: isUpdating } = useUpdateChatbot();
+
+  useEffect(() => {
+    loadChatbots();
+  }, []);
+
+  const loadChatbots = async () => {
+    const data = await getChatbots();
+    if (data && data.chatbots) {
+      setChatbots(data.chatbots);
+    } else {
+      setChatbots([]);
+    }
+  };
 
   const handleCreateChatbot = () => {
     navigate(ROUTES.ADMIN.CHATBOT_CREATE);
   };
 
-  const handleAddManual = (chatbotId: string) => {
-    navigate(ROUTES.ADMIN.CHATBOT_MANUAL(chatbotId));
-  };
+  const handleTogglePublic = async (chatbotId: string, isPublic: boolean) => {
+    const updatedChatbot = await updateChatbot(chatbotId, { is_public: !isPublic });
 
-  const handleEditManual = (chatbotId: string) => {
-    console.log('매뉴얼 수정:', chatbotId);
-    // TODO: 매뉴얼 수정 로직
-  };
-
-  const handleDeleteManual = (chatbotId: string) => {
-    console.log('매뉴얼 삭제:', chatbotId);
-    // TODO: 매뉴얼 삭제 확인 모달 + 삭제 로직
-  };
-
-  const handleTogglePublic = (chatbotId: string, isPublic: boolean) => {
-    // TODO: API 호출로 공개 상태 변경
-    setChatbots(prevChatbots =>
-      prevChatbots.map(chatbot =>
-        chatbot.chatbot_id === chatbotId
-          ? { ...chatbot, is_public: isPublic }
-          : chatbot
-      )
-    );
+    if (updatedChatbot) {
+      await loadChatbots();
+    } else {
+      alert('공개 상태 변경에 실패했습니다.');
+    }
   };
 
   return (
@@ -68,13 +52,18 @@ function ChatbotListPage() {
           </Button>
         </div>
 
-        <ChatbotTable
-          chatbots={chatbots}
-          onAddManual={handleAddManual}
-          onEditManual={handleEditManual}
-          onDeleteManual={handleDeleteManual}
-          onTogglePublic={handleTogglePublic}
-        />
+        {isLoadingList ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <p className="text-gray-500">로딩 중...</p>
+          </div>
+        ) : (
+          <ChatbotListProvider
+            onTogglePublic={handleTogglePublic}
+            isUpdating={isUpdating}
+          >
+            <ChatbotTable chatbots={chatbots} />
+          </ChatbotListProvider>
+        )}
       </main>
     </>
   );

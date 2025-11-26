@@ -6,12 +6,12 @@ import ToggleSwitch from '../../../components/common/ToggleSwitch';
 import Button from '../../../components/common/Button';
 import PageHeader from '../../../components/common/PageHeader';
 import { ROUTES } from '../../../constants/routes';
-import { apiClient } from '../../../api/client';
-import type { CreateChatbotRequest, Chatbot } from '../../../types/admin/chatbot';
-import type { ApiResponse } from '../../../types/api';
+import { useCreateChatbot } from '../../../hooks/chatbot/useChatbot';
+import type { CreateChatbotRequest } from '../../../types/admin/chatbot';
 
 function ChatbotCreatePage() {
   const navigate = useNavigate();
+  const { createChatbot, isLoading } = useCreateChatbot();
 
   const [formData, setFormData] = useState<CreateChatbotRequest>({
     name: '',
@@ -21,7 +21,6 @@ function ChatbotCreatePage() {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -56,25 +55,13 @@ function ChatbotCreatePage() {
       return;
     }
 
-    setIsSubmitting(true);
+    const result = await createChatbot(formData);
 
-    try {
-      const response = await apiClient.post<ApiResponse<Chatbot>>(
-        '/api/set/chatbots',
-        formData
-      );
-
-      if (response.data.success && response.data.data) {
-        alert('챗봇이 생성되었습니다.');
-        navigate(ROUTES.ADMIN.CHATBOT_LIST);
-      } else {
-        throw new Error('챗봇 생성에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('챗봇 생성 에러:', error);
+    if (result) {
+      alert('챗봇이 생성되었습니다.');
+      navigate(ROUTES.ADMIN.CHATBOT_LIST);
+    } else {
       alert('챗봇 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -168,12 +155,12 @@ function ChatbotCreatePage() {
                 type="button"
                 variant="secondary"
                 onClick={handleCancel}
-                disabled={isSubmitting}
+                disabled={isLoading}
               >
                 취소
               </Button>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? '생성 중...' : '챗봇 생성'}
+              <Button type="submit" variant="primary" disabled={isLoading}>
+                {isLoading ? '생성 중...' : '챗봇 생성'}
               </Button>
             </div>
           </form>

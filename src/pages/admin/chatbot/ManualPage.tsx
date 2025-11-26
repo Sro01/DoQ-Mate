@@ -1,11 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../../components/common/Button';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
 import ManualFileList from '../../../components/admin/manual/ManualFileList';
-import type { Chatbot } from '../../../types/admin/chatbot';
+import Input from '../../../components/common/Input';
+import Textarea from '../../../components/common/Textarea';
+import ToggleSwitch from '../../../components/common/ToggleSwitch';
+import Modal from '../../../components/common/Modal';
+import PageHeader from '../../../components/common/PageHeader';
+import type { Chatbot, UpdateChatbotRequest } from '../../../types/admin/chatbot';
 import type { Manual, UploadingFile } from '../../../types/admin/manual';
 import { ROUTES } from '../../../constants/routes';
+import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
+import { useGetChatbotDetail, useUpdateChatbot, useDeleteChatbot } from '../../../hooks/chatbot/useChatbot';
 
 function ManualPage() {
   const navigate = useNavigate();
@@ -13,18 +20,44 @@ function ManualPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // TODO: API로 챗봇 정보 가져오기
-  const [chatbot] = useState<Chatbot>({
-    chatbot_id: chatbotId || '',
-    name: '소비자 매뉴얼 챗봇',
-    description: '',
+  const { getChatbotDetail, isLoading: isLoadingDetail } = useGetChatbotDetail();
+  const { updateChatbot, isLoading: isUpdating } = useUpdateChatbot();
+  const { deleteChatbot, isLoading: isDeleting } = useDeleteChatbot();
+
+  const [chatbot, setChatbot] = useState<Chatbot | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editFormData, setEditFormData] = useState<UpdateChatbotRequest>({
+    name: '',
+    description: undefined,
     is_public: true,
-    created_at: "2025-01-01T00:00:00Z"
+    tag: undefined,
   });
 
   // TODO: API로 매뉴얼 목록 가져오기
   const [manuals] = useState<Manual[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+
+  useEffect(() => {
+    const loadChatbot = async () => {
+      if (!chatbotId) {
+        alert('챗봇 ID가 없습니다.');
+        navigate(ROUTES.ADMIN.CHATBOT_LIST);
+        return;
+      }
+
+      const data = await getChatbotDetail(chatbotId);
+      if (data) {
+        setChatbot(data);
+      } else {
+        alert('챗봇 정보를 불러오지 못했습니다.');
+        navigate(ROUTES.ADMIN.CHATBOT_LIST);
+      }
+    };
+
+    loadChatbot();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatbotId]);
 
   const processFiles = (files: FileList | File[]) => {
     const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
@@ -92,13 +125,118 @@ function ManualPage() {
     navigate(ROUTES.ADMIN.CHATBOT_LIST);
   };
 
+  const handleTogglePublic = async (chatbotId: string, isPublic: boolean) => {
+    const updatedChatbot = await updateChatbot(chatbotId, { is_public: !isPublic });
+
+    if (updatedChatbot) {
+      setChatbot(updatedChatbot);
+    } else {
+      alert('공개 상태 변경에 실패했습니다.');
+    }
+  };
+
+  const handleEditClick = () => {
+    if (!chatbot) return;
+
+    setEditFormData({
+      name: chatbot.name,
+      description: chatbot.description || undefined,
+      is_public: chatbot.is_public,
+      tag: chatbot.tag || undefined,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({ ...prev, [name]: value || undefined }));
+  };
+
+  const handleEditToggleChange = (value: boolean) => {
+    setEditFormData((prev) => ({ ...prev, is_public: value }));
+  };
+
+  const handleEditSubmit = async () => {
+    if (!chatbot || !editFormData.name || !editFormData.name.trim()) {
+      alert('챗봇 이름을 입력해주세요.');
+      return;
+    }
+
+    const updatedChatbot = await updateChatbot(chatbot.chatbot_id, editFormData);
+
+    if (updatedChatbot) {
+      setChatbot(updatedChatbot);
+      setShowEditModal(false);
+      alert('챗봇 정보가 수정되었습니다.');
+    } else {
+      alert('챗봇 수정에 실패했습니다.');
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!chatbot) return;
+
+    const success = await deleteChatbot(chatbot.chatbot_id);
+
+    if (success) {
+      alert('챗봇이 삭제되었습니다.');
+      navigate(ROUTES.ADMIN.CHATBOT_LIST);
+    } else {
+      alert('챗봇 삭제에 실패했습니다.');
+      setShowDeleteModal(false);
+    }
+  };
+
+  if (isLoadingDetail) {
+    return (
+      <main className="flex-1 p-8">
+        <PageHeader title="챗봇 설정" />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <p className="text-gray-500">로딩 중...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!chatbot) {
+    return (
+      <main className="flex-1 p-8">
+        <PageHeader title="챗봇 설정" />
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <p className="text-gray-500">챗봇 정보를 불러올 수 없습니다.</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex-1 p-8">
-      <h1 className="text-2xl font-bold mb-6">매뉴얼 설정</h1>
+      <PageHeader title="챗봇 설정" />
 
       {/* 선택된 챗봇 정보 */}
       <div className="mb-6">
-        <ChatbotTable chatbots={[chatbot]} />
+        <ChatbotListProvider
+          onTogglePublic={handleTogglePublic}
+          isUpdating={isUpdating}
+        >
+          <ChatbotTable chatbots={[chatbot]} />
+        </ChatbotListProvider>
+
+        {/* 챗봇 수정/삭제 버튼 */}
+        <div className="flex justify-end gap-3 mt-4">
+          <Button variant="outline" onClick={handleEditClick}>
+            챗봇 정보 수정
+          </Button>
+          <Button variant="red" onClick={handleDeleteClick} disabled={isDeleting}>
+            챗봇 삭제
+          </Button>
+        </div>
       </div>
 
       {/* 파일 미리보기/관리 영역 */}
@@ -151,6 +289,88 @@ function ManualPage() {
           취소
         </Button>
       </div>
+
+      {/* 챗봇 정보 수정 모달 */}
+      <Modal
+        isOpen={showEditModal}
+        title="챗봇 정보 수정"
+        maxWidth="2xl"
+        confirmText={isUpdating ? '수정 중...' : '수정'}
+        cancelText="취소"
+        onConfirm={handleEditSubmit}
+        onCancel={() => setShowEditModal(false)}
+        confirmDisabled={isUpdating}
+      >
+        <div className="space-y-6">
+          <Input
+            label="챗봇 이름"
+            name="name"
+            type="text"
+            value={editFormData.name || ''}
+            onChange={handleEditInputChange}
+            placeholder="챗봇 이름을 입력하세요"
+            required
+          />
+
+          <Textarea
+            label="설명"
+            id="description"
+            name="description"
+            value={editFormData.description || ''}
+            onChange={handleEditInputChange}
+            placeholder="챗봇에 대한 설명을 입력하세요"
+            rows={3}
+          />
+
+          <Input
+            label="태그"
+            name="tag"
+            type="text"
+            value={editFormData.tag || ''}
+            onChange={handleEditInputChange}
+            placeholder="예: 고객지원, 사내용"
+          />
+
+          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <label className="text-sm font-medium text-gray-900 block mb-1">
+                  공개 여부
+                </label>
+                <p className="text-xs text-gray-500">
+                  {editFormData.is_public
+                    ? '모든 사용자가 이 챗봇을 사용할 수 있습니다'
+                    : '관리자만 이 챗봇을 사용할 수 있습니다'}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 ml-4">
+                <span
+                  className={`text-sm font-medium ${
+                    editFormData.is_public ? 'text-blue-600' : 'text-gray-500'
+                  }`}
+                >
+                  {editFormData.is_public ? '공개' : '비공개'}
+                </span>
+                <ToggleSwitch
+                  checked={editFormData.is_public ?? true}
+                  onChange={handleEditToggleChange}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 챗봇 삭제 확인 모달 */}
+      <Modal
+        isOpen={showDeleteModal}
+        title="챗봇 삭제"
+        message={`'${chatbot.name}' 챗봇을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </main>
   );
 }

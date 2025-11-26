@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Signup } from '../../../types/auth/signup';
 import Button from '../../../components/common/Button';
 import PageHeader from '../../../components/common/PageHeader';
-import ConfirmModal from '../../../components/common/ConfirmModal';
+import Modal from '../../../components/common/Modal';
 import { useGetSignups, useApproveSignup, useRejectSignup } from '../../../hooks/signup/useSignup';
 
 function SignupManagementPage() {
@@ -159,7 +159,7 @@ function SignupManagementPage() {
       </main>
 
       {/* 승인 확인 모달 */}
-      <ConfirmModal
+      <Modal
         isOpen={showApproveModal}
         title="가입 승인"
         message={`${selectedSignup?.name}(${selectedSignup?.username})님의 가입을 승인하시겠습니까?`}
@@ -173,7 +173,7 @@ function SignupManagementPage() {
       />
 
       {/* 반려 확인 모달 */}
-      <ConfirmModal
+      <Modal
         isOpen={showRejectModal}
         title="가입 반려"
         message={`${selectedSignup?.name}(${selectedSignup?.username})님의 가입 신청을 반려하시겠습니까?`}

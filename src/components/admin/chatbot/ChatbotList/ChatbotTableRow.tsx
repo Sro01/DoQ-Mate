@@ -2,22 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Chatbot } from '../../../../types/admin/chatbot';
 import ToggleSwitch from '../../../common/ToggleSwitch';
-import ConfirmModal from '../../../common/ConfirmModal';
+import Modal from '../../../common/Modal';
+import { useChatbotListContext } from '../../../../contexts/ChatbotListContext';
 
 interface ChatbotTableRowProps {
   chatbot: Chatbot;
   index: number;
-  onAddManual?: (chatbotId: string) => void;
-  onEditManual?: (chatbotId: string) => void;
-  onDeleteManual?: (chatbotId: string) => void;
-  onTogglePublic?: (chatbotId: string, isPublic: boolean) => void;
 }
 
 function ChatbotTableRow({
   chatbot,
-  index,
-  onTogglePublic
+  index
 }: ChatbotTableRowProps) {
+  const { onTogglePublic, isUpdating } = useChatbotListContext();
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingPublicState, setPendingPublicState] = useState(false);
@@ -28,7 +25,7 @@ function ChatbotTableRow({
   };
 
   const handleConfirm = () => {
-    onTogglePublic?.(chatbot.chatbot_id, pendingPublicState);
+    onTogglePublic(chatbot.chatbot_id, chatbot.is_public);
     setShowConfirmModal(false);
   };
 
@@ -61,15 +58,16 @@ function ChatbotTableRow({
             <ToggleSwitch
               checked={chatbot.is_public}
               onChange={handleToggleClick}
+              disabled={isUpdating}
             />
-            <span className={`w-12 text-left ${chatbot.is_public ? 'text-green-600' : 'text-gray-500'}`}>
-              {chatbot.is_public ? '공개' : '비공개'}
+            <span className={`w-12 text-left ${chatbot.is_public ? 'text-green-600' : 'text-gray-500'} ${isUpdating ? 'opacity-50' : ''}`}>
+              {isUpdating ? '처리중...' : (chatbot.is_public ? '공개' : '비공개')}
             </span>
           </div>
         </td>
       </tr>
 
-      <ConfirmModal
+      <Modal
         isOpen={showConfirmModal}
         title="공개 상태 변경"
         message={`해당 챗봇을 ${pendingPublicState ? '공개' : '비공개'}로 전환합니다.`}

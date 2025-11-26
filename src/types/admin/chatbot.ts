@@ -20,8 +20,9 @@ export interface Chatbot {
 // 챗봇 목록 조회 (GET /api/set/chatbots)
 // ============================================
 
-// 배열 그대로 반환
-export type ChatbotListResponseData = Chatbot[];
+export interface ChatbotListResponseData {
+  chatbots: Chatbot[];
+}
 
 // ============================================
 // 챗봇 생성 (POST /api/set/chatbots)
