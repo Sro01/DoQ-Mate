@@ -7,7 +7,7 @@ import TextLink from '../../components/common/TextLink';
 import AuthPageLayout from '../../layouts/AuthPageLayout';
 import { ROUTES } from '../../constants/routes';
 import { useLogin } from '../../hooks/auth/useAuth';
-import { setAccessToken, setAdminId } from '../../utils/authStorage';
+import { setAccessToken, setAdminId, setAdminName } from '../../utils/authStorage';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -56,6 +56,7 @@ function LoginPage() {
     if (formData.username.includes('test')) {
       setAccessToken('dummy-test-token');
       setAdminId('test-admin-id');
+      setAdminName('테스트 관리자');
 
       const from = location.state?.from?.pathname || ROUTES.ADMIN.CHATBOT_LIST;
       navigate(from, { replace: true });
@@ -74,6 +75,7 @@ function LoginPage() {
       // 액세스 토큰 및 관리자 정보 저장
       setAccessToken(loginResult.token);
       setAdminId(loginResult.admin.admin_id);
+      setAdminName(loginResult.admin.name);
 
       // 이전 페이지로 리다이렉트 또는 기본 admin 페이지로 이동
       const from = location.state?.from?.pathname || ROUTES.ADMIN.CHATBOT_LIST;

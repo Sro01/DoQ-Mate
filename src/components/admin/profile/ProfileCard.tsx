@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button';
 import { ROUTES } from '../../../constants/routes';
+import { clearAuthData } from '../../../utils/authStorage';
 
 interface ProfileCardProps {
   userName?: string;
@@ -14,9 +15,7 @@ function ProfileCard({
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // TODO: API 호출 (POST /api/auth/logout) 또는 토큰 삭제
-    // TODO: 로그인 상태 전역 관리 (Context/Store)에서 로그아웃 처리
-    console.log('로그아웃');
+    clearAuthData();
     navigate(ROUTES.AUTH.LOGIN);
   };
 

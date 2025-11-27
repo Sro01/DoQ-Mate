@@ -1,25 +1,26 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from '../admin/profile/ProfileCard';
 import Dropdown from '../common/Dropdown';
 import NavItem from './NavItem';
 import SubMenuItem from './SubMenuItem';
 import { ROUTES } from '../../constants/routes';
+import { getAdminName, getAccessToken } from '../../utils/authStorage';
 
 interface AdminSidebarContentProps {
   isCollapsed: boolean;
 }
 
 function AdminSidebarContent({ isCollapsed }: AdminSidebarContentProps) {
-  const [isLoggedIn] = useState(true);
   const navigate = useNavigate();
+  const adminName = getAdminName();
+  const isLoggedIn = !!getAccessToken();
 
   return (
     <>
       <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         {!isCollapsed && (
           <ProfileCard
-            userName="김길동"
+            userName={adminName || '관리자'}
             isLoggedIn={isLoggedIn}
           />
         )}

@@ -2,16 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import WelcomeTitle from '../../components/common/WelcomeTitle';
 import Button from '../../components/common/Button';
 import { ROUTES } from '../../constants/routes';
+import { getAdminName } from '../../utils/authStorage';
 
 function AdminMainPage() {
-  // TODO: 실제 사용자 이름은 Context나 전역 상태에서 가져오기
-  const username = '김길동';
+  const adminName = getAdminName() || '관리자';
   const navigate = useNavigate();
 
   return (
     <main className="flex-1 h-full flex flex-col items-center justify-center gap-6">
       <WelcomeTitle>
-        {username}님 환영합니다.
+        {adminName}님 환영합니다.
       </WelcomeTitle>
       <div className="flex flex-row gap-4">
         <Button className="rounded-full" onClick={() => navigate(ROUTES.ADMIN.CHATBOT_LIST)}>
