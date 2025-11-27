@@ -10,9 +10,9 @@ import AdminMainPage from '../pages/admin/AdminMainPage';
 import AdminListPage from '../pages/admin/settings/AdminListPage';
 import ChatbotListPage from '../pages/admin/chatbot/ChatbotListPage';
 import ChatbotCreatePage from '../pages/admin/chatbot/ChatbotCreatePage';
-import ManualPage from '../pages/admin/chatbot/ManualPage';
+import ManualPage from '../pages/admin/manual/ManualPage';
 import SignupManagementPage from '../pages/admin/settings/SignupManagementPage';
-import ProfileSettingsPage from '../pages/admin/settings/ProfileSettingsPage';
+import ProfileSettingsPage from '../pages/admin/profile/ProfileSettingsPage';
 import ChatPage from '../pages/chat/ChatPage';
 
 // Public Routes: 인증이 필요 없는 라우트

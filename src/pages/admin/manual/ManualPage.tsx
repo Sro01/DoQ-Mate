@@ -13,6 +13,8 @@ import type { Manual, UploadingFile } from '../../../types/admin/manual';
 import { ROUTES } from '../../../constants/routes';
 import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
 import { useGetChatbotDetail, useUpdateChatbot, useDeleteChatbot } from '../../../hooks/chatbot/useChatbot';
+import { useGetManuals, useUploadManual, useDeleteManual } from '../../../hooks/admin/useManual';
+import { PencilLine, Trash2 } from 'lucide-react';
 
 function ManualPage() {
   const navigate = useNavigate();
@@ -24,6 +26,10 @@ function ManualPage() {
   const { updateChatbot, isLoading: isUpdating } = useUpdateChatbot();
   const { deleteChatbot, isLoading: isDeleting } = useDeleteChatbot();
 
+  const { getManuals, isLoading: isLoadingManuals } = useGetManuals();
+  const { uploadManual, isLoading: isUploading } = useUploadManual();
+  const { deleteManual, isLoading: isDeletingManual } = useDeleteManual();
+
   const [chatbot, setChatbot] = useState<Chatbot | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -34,9 +40,16 @@ function ManualPage() {
     tag: undefined,
   });
 
-  // TODO: API로 매뉴얼 목록 가져오기
-  const [manuals] = useState<Manual[]>([]);
+  const [manuals, setManuals] = useState<Manual[]>([]);
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+
+  const loadManuals = async () => {
+    if (!chatbotId) return;
+    const data = await getManuals(chatbotId);
+    if (data) {
+      setManuals(data);
+    }
+  };
 
   useEffect(() => {
     const loadChatbot = async () => {
@@ -56,6 +69,7 @@ function ManualPage() {
     };
 
     loadChatbot();
+    loadManuals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatbotId]);
 
@@ -106,6 +120,17 @@ function ManualPage() {
     setUploadingFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeleteManual = async (manualId: string) => {
+    if (!confirm('이 매뉴얼을 삭제하시겠습니까?')) return;
+
+    const success = await deleteManual(manualId);
+    if (success) {
+      await loadManuals();
+    } else {
+      alert('매뉴얼 삭제에 실패했습니다.');
+    }
+  };
+
   const handleUpdateDisplayName = (index: number, newName: string) => {
     setUploadingFiles(prev =>
       prev.map((item, i) =>
@@ -115,10 +140,33 @@ function ManualPage() {
   };
 
 
-  const handleSubmit = () => {
-    console.log('등록할 파일:', uploadingFiles);
-    // TODO: 매뉴얼 등록 로직
-    navigate(ROUTES.ADMIN.CHATBOT_LIST);
+  const handleSubmit = async () => {
+    if (!chatbotId || uploadingFiles.length === 0) return;
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const file of uploadingFiles) {
+      const result = await uploadManual(chatbotId, {
+        file: file.file,
+        display_name: file.display_name,
+      });
+
+      if (result) {
+        successCount++;
+      } else {
+        failCount++;
+      }
+    }
+
+    if (failCount > 0) {
+      alert(`${successCount}개 업로드 성공, ${failCount}개 업로드 실패`);
+    } else {
+      alert(`${successCount}개 매뉴얼이 등록되었습니다.`);
+    }
+
+    setUploadingFiles([]);
+    await loadManuals();
   };
 
   const handleCancel = () => {
@@ -221,6 +269,16 @@ function ManualPage() {
 
       {/* 선택된 챗봇 정보 */}
       <div className="mb-6">
+        {/* 챗봇 수정/삭제 버튼 */}
+        <div className="flex justify-end gap-3 mb-4">
+          <Button variant="outline" onClick={handleEditClick} icon={<PencilLine size={20} />}>
+            수정
+          </Button>
+          <Button variant="red" onClick={handleDeleteClick} disabled={isDeleting} icon={<Trash2 size={20} />}>
+            삭제
+          </Button>
+        </div>
+
         <ChatbotListProvider
           onTogglePublic={handleTogglePublic}
           isUpdating={isUpdating}
@@ -228,15 +286,6 @@ function ManualPage() {
           <ChatbotTable chatbots={[chatbot]} />
         </ChatbotListProvider>
 
-        {/* 챗봇 수정/삭제 버튼 */}
-        <div className="flex justify-end gap-3 mt-4">
-          <Button variant="outline" onClick={handleEditClick}>
-            챗봇 정보 수정
-          </Button>
-          <Button variant="red" onClick={handleDeleteClick} disabled={isDeleting}>
-            챗봇 삭제
-          </Button>
-        </div>
       </div>
 
       {/* 파일 미리보기/관리 영역 */}
@@ -251,6 +300,8 @@ function ManualPage() {
           uploadingFiles={uploadingFiles}
           onRemoveFile={handleRemoveFile}
           onUpdateDisplayName={handleUpdateDisplayName}
+          onDeleteManual={handleDeleteManual}
+          isDeletingManual={isDeletingManual}
           isDragging={isDragging}
         />
       </div>
@@ -281,9 +332,9 @@ function ManualPage() {
         <Button
           variant="primary"
           onClick={handleSubmit}
-          disabled={uploadingFiles.length === 0}
+          disabled={uploadingFiles.length === 0 || isUploading}
         >
-          등록
+          {isUploading ? '등록 중...' : '등록'}
         </Button>
         <Button variant="secondary" onClick={handleCancel}>
           취소

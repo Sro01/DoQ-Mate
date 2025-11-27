@@ -1,15 +1,27 @@
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'white' | 'red';
   size?: 'small' | 'medium' | 'large';
+  icon?: ReactNode;
+  iconPosition?: 'left' | 'right';
 }
 
-function Button({ children, variant, size = 'medium', className = '', ...props }: ButtonProps) {
+function Button({
+  children,
+  variant,
+  size = 'medium',
+  icon,
+  iconPosition = 'left',
+  className = '',
+  ...props
+}: ButtonProps) {
   // rounded 클래스를 className에서 추출
   const hasRoundedClass = className.includes('rounded');
   const baseClasses = hasRoundedClass
-    ? "font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
-    : "font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md";
+    ? "font-semibold transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center justify-center"
+    : "font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md inline-flex items-center justify-center";
 
   let variantClasses = "";
   let sizeClasses = "";
@@ -42,12 +54,16 @@ function Button({ children, variant, size = 'medium', className = '', ...props }
       sizeClasses = "text-lg py-3 px-6";
       break;
     default: // medium
-      sizeClasses = "text-base py-2.5 px-5";
+      sizeClasses = "text-base py-2.5 px-4";
   }
 
+  const gapClass = icon ? 'gap-2' : '';
+
   return (
-    <button className={`${baseClasses} ${variantClasses} ${sizeClasses} ${className}`} {...props}>
-      {children}
+    <button className={`${baseClasses} ${variantClasses} ${sizeClasses} ${gapClass} ${className}`} {...props}>
+      {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}
+      {icon ? <span>{children}</span> : children}
+      {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
     </button>
   );
 }

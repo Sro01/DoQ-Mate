@@ -7,6 +7,8 @@ interface ManualFileListProps {
   uploadingFiles?: UploadingFile[];
   onRemoveFile?: (index: number) => void;
   onUpdateDisplayName?: (index: number, newName: string) => void;
+  onDeleteManual?: (manualId: string) => void;
+  isDeletingManual?: boolean;
   isDragging?: boolean;
 }
 
@@ -15,6 +17,8 @@ function ManualFileList({
   uploadingFiles = [],
   onRemoveFile,
   onUpdateDisplayName,
+  onDeleteManual,
+  isDeletingManual = false,
   isDragging = false
 }: ManualFileListProps) {
   const hasFiles = manuals.length > 0 || uploadingFiles.length > 0;
@@ -64,6 +68,15 @@ function ManualFileList({
                   파일명: {manual.original_filename}
                 </div>
               </div>
+              {onDeleteManual && (
+                <button
+                  onClick={() => onDeleteManual(manual.manual_id)}
+                  disabled={isDeletingManual}
+                  className="ml-3 px-3 py-1 text-sm text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeletingManual ? '삭제 중...' : '삭제'}
+                </button>
+              )}
             </div>
           ))}
 

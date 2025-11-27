@@ -43,14 +43,14 @@ function ChatbotTableRow({
         className="border-b border-gray-100 hover:bg-blue-50/30 transition-all duration-200 hover:cursor-pointer"
         onClick={handleRowClick}
       >
-        <td className="px-6 py-5 text-center text-gray-600 font-medium">{index + 1}</td>
-        <td className="px-6 py-5 text-center text-gray-800 font-semibold">
+        <td className="px-6 py-5 text-center text-gray-600 font-medium whitespace-nowrap">{index + 1}</td>
+        <td className="px-6 py-5 text-center text-gray-800 font-semibold max-w-[150px] truncate" title={chatbot.name}>
           {chatbot.name}
         </td>
-        <td className="px-6 py-5 text-center text-gray-600">
+        <td className="px-6 py-5 text-center text-gray-600 max-w-[100px] truncate" title={chatbot.tag || ''}>
           {chatbot.tag || <span className="text-gray-400">-</span>}
         </td>
-        <td className="px-6 py-5 text-center text-gray-600">
+        <td className="px-6 py-5 text-center text-gray-600 max-w-[200px] truncate" title={chatbot.description || ''}>
           {chatbot.description || <span className="text-gray-400">-</span>}
         </td>
         <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>

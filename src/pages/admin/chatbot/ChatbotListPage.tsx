@@ -7,6 +7,7 @@ import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotT
 import { ROUTES } from '../../../constants/routes';
 import { useGetChatbots, useUpdateChatbot } from '../../../hooks/chatbot/useChatbot';
 import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
+import { Plus } from 'lucide-react';
 
 function ChatbotListPage() {
   const navigate = useNavigate();
@@ -45,12 +46,13 @@ function ChatbotListPage() {
   return (
     <>
       <main className="flex-1 p-8">
-        <div className="flex justify-between items-start mb-6">
           <PageHeader title="챗봇 리스트" />
-          <Button variant="outline" onClick={handleCreateChatbot}>
-            챗봇 생성
-          </Button>
-        </div>
+
+          <div className="flex justify-end mb-6">
+            <Button variant="outline" onClick={handleCreateChatbot} icon={<Plus size={20} />}>
+              챗봇 생성
+            </Button>
+          </div>
 
         {isLoadingList ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
