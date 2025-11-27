@@ -302,6 +302,7 @@ function ManualPage() {
           onUpdateDisplayName={handleUpdateDisplayName}
           onDeleteManual={handleDeleteManual}
           isDeletingManual={isDeletingManual}
+          isLoadingManuals={isLoadingManuals}
           isDragging={isDragging}
         />
       </div>

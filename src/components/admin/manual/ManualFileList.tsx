@@ -9,6 +9,7 @@ interface ManualFileListProps {
   onUpdateDisplayName?: (index: number, newName: string) => void;
   onDeleteManual?: (manualId: string) => void;
   isDeletingManual?: boolean;
+  isLoadingManuals?: boolean;
   isDragging?: boolean;
 }
 
@@ -19,6 +20,7 @@ function ManualFileList({
   onUpdateDisplayName,
   onDeleteManual,
   isDeletingManual = false,
+  isLoadingManuals = false,
   isDragging = false
 }: ManualFileListProps) {
   const hasFiles = manuals.length > 0 || uploadingFiles.length > 0;
@@ -43,7 +45,11 @@ function ManualFileList({
 
   return (
     <div className={`bg-white rounded-xl shadow-sm border-2 ${isDragging ? 'border-blue-400 border-dashed bg-blue-50' : 'border-gray-100'} p-8 mb-6 min-h-[300px] transition-all`}>
-      {!hasFiles ? (
+      {isLoadingManuals ? (
+        <div className="flex flex-col items-center justify-center h-[250px] text-gray-500">
+          <p className="text-lg font-medium">매뉴얼 목록을 불러오는 중...</p>
+        </div>
+      ) : !hasFiles ? (
         <div className="flex flex-col items-center justify-center h-[250px] text-gray-500">
           <Upload className="w-16 h-16 mb-4" strokeWidth={1.5} />
           <p className="text-lg font-medium">PDF 파일을 드래그하거나 클릭하여 업로드하세요</p>
