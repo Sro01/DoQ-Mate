@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
@@ -8,6 +8,7 @@ import AuthPageLayout from '../../layouts/AuthPageLayout';
 import { ROUTES } from '../../constants/routes';
 import { useLogin } from '../../hooks/auth/useAuth';
 import { setAccessToken, setAdminId, setAdminName } from '../../utils/authStorage';
+import { getLogoutReason, getLogoutMessage } from '../../utils/forceLogout';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -19,6 +20,15 @@ function LoginPage() {
     password: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
+
+  // 로그아웃 사유 확인
+  useEffect(() => {
+    const reason = getLogoutReason();
+    if (reason) {
+      setLogoutMessage(getLogoutMessage(reason));
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -90,8 +100,13 @@ function LoginPage() {
       title="로그인"
       subtitle="DoQ-Mate 관리자 시스템"
     >
+      {logoutMessage && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {logoutMessage}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 아이디 */}
         <Input
           type="text"
           id="username"

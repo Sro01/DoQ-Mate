@@ -14,8 +14,8 @@ function NavItem({ icon, label, hasDropdown = false, isActive = false, isCollaps
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 py-3 text-left transition-all duration-200 rounded-lg ${
-        isCollapsed ? 'px-2 justify-center' : 'px-4'
+      className={`w-full flex items-center py-3 text-left transition-all duration-200 rounded-lg ${
+        isCollapsed ? 'justify-center' : 'gap-3 px-4'
       } ${
         isActive
           ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 font-semibold'
@@ -24,16 +24,14 @@ function NavItem({ icon, label, hasDropdown = false, isActive = false, isCollaps
       title={isCollapsed ? label : undefined}
     >
       <span className="text-xl">{icon}</span>
-      <div className={`flex items-center flex-1 transition-opacity duration-200 ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
-        {!isCollapsed && (
-          <>
-            <span className="flex-1 font-medium whitespace-nowrap">{label}</span>
-            {hasDropdown && (
-              isOpen ? <ChevronDown size={18} className="text-blue-500" /> : <ChevronRight size={18} className="text-gray-400" />
-            )}
-          </>
-        )}
-      </div>
+      {!isCollapsed && (
+        <div className="flex items-center flex-1">
+          <span className="flex-1 font-medium whitespace-nowrap">{label}</span>
+          {hasDropdown && (
+            isOpen ? <ChevronDown size={18} className="text-blue-500" /> : <ChevronRight size={18} className="text-gray-400" />
+          )}
+        </div>
+      )}
     </button>
   );
 }

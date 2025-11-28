@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../common/Button';
 import { ROUTES } from '../../../constants/routes';
-import { clearAuthData } from '../../../utils/authStorage';
+import { forceLogout } from '../../../utils/forceLogout';
 
 interface ProfileCardProps {
   userName?: string;
@@ -15,8 +15,7 @@ function ProfileCard({
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    clearAuthData();
-    navigate(ROUTES.AUTH.LOGIN);
+    forceLogout('logout');
   };
 
   const handleSettings = () => {

@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { getAccessToken, getAdminId, clearAuthData } from '../utils/authStorage';
+import { getAccessToken, getAdminId } from '../utils/authStorage';
+import { forceLogout } from '../utils/forceLogout';
 
 const API_BASE_URL = '/api';
 
@@ -40,9 +41,12 @@ apiClient.interceptors.response.use(
 
     // 401 Unauthorized 에러 처리
     if (error.response?.status === 401) {
-      // 인증 데이터 삭제 및 로그인 페이지로 리다이렉트
-      clearAuthData();
-      window.location.href = '/auth/login';
+      forceLogout('session_expired');
+    }
+
+    // 403 Forbidden 에러 처리 (추방된 관리자)
+    if (error.response?.status === 403) {
+      forceLogout('expelled');
     }
 
     return Promise.reject(error);

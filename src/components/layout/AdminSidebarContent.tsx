@@ -29,6 +29,7 @@ function AdminSidebarContent({ isCollapsed }: AdminSidebarContentProps) {
       <nav className="mt-4 flex-1">
         <Dropdown
           isCollapsed={isCollapsed}
+          collapsedNavigateTo={ROUTES.ADMIN.CHATBOT_LIST}
           trigger={
             <NavItem
               icon="🤖"
@@ -44,11 +45,13 @@ function AdminSidebarContent({ isCollapsed }: AdminSidebarContentProps) {
         <NavItem
           icon="📊"
           label="통계"
+          isCollapsed={isCollapsed}
           onClick={() => navigate(ROUTES.ADMIN.STATS)}
         />
 
         <Dropdown
           isCollapsed={isCollapsed}
+          collapsedNavigateTo={ROUTES.ADMIN.SIGNUP_MANAGEMENT}
           trigger={
             <NavItem
               icon="⚙️"
