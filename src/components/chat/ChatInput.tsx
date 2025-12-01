@@ -14,6 +14,7 @@ function ChatInput({ onSendMessage, isSendDisabled = false }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [chatbots, setChatbots] = useState<Chatbot[]>([]);
   const [selectedChatbot, setSelectedChatbot] = useState<Chatbot | null>(null);
@@ -32,6 +33,23 @@ function ChatInput({ onSendMessage, isSendDisabled = false }: ChatInputProps) {
     window.addEventListener('auth-change', handleAuthChange);
     return () => window.removeEventListener('auth-change', handleAuthChange);
   }, []);
+
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -104,7 +122,7 @@ function ChatInput({ onSendMessage, isSendDisabled = false }: ChatInputProps) {
           />
 
           <div className="flex items-center justify-between px-4 pb-3">
-            <div className="relative z-50">
+            <div ref={dropdownRef} className="relative z-50">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 rounded-2xl transition-colors disabled:opacity-50"

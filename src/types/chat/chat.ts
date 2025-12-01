@@ -1,7 +1,7 @@
 export interface ChatImage {
   id: string;
   mime_type: string;
-  data: string;  // Base64
+  img_data: string;  // Base64
   description?: string;
 }
 
