@@ -1,10 +1,9 @@
-import { SquarePen } from 'lucide-react';
+import { SquarePen, LogIn, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useChatContext } from '../../contexts/ChatContext';
 import { updateSessionTitle, togglePinSession } from '../../utils/chatStorage';
 import ChatListItem from './ChatListItem';
 import { ROUTES } from '../../constants/routes';
-import TextLink from '../common/TextLink';
 import { isAuthenticated } from '../../utils/permissions';
 import { clearAuthData } from '../../utils/authStorage';
 
@@ -17,12 +16,12 @@ function NewChatButton({ isCollapsed, onClick }: NewChatButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center py-3 text-left transition-all duration-200 rounded-lg ${
+      className={`w-full flex items-center py-3 text-left transition-all duration-200 rounded-xl ${
         isCollapsed ? 'justify-center' : 'gap-3 px-4'
-      } text-gray-700 hover:bg-blue-50`}
+      } text-gray-700 hover:bg-black/10`}
       title={isCollapsed ? '새 채팅' : undefined}
     >
-      <SquarePen size={20} className="text-gray-600" />
+      <SquarePen size={20} />
       {!isCollapsed && <span className="font-medium whitespace-nowrap">새 채팅</span>}
     </button>
   );
@@ -85,15 +84,20 @@ function ChatSidebarContent({
     <>
       <NewChatButton isCollapsed={isCollapsed} onClick={handleNewChat} />
 
-      <nav className="mt-6 flex-1 overflow-y-auto">
+      <nav className="mt-5 flex-1 overflow-y-auto">
         <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           {!isCollapsed && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-500 px-2 mb-3">최근 채팅</h3>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 px-3 mb-3">
+                <div className="h-px flex-1 bg-gray-300/50" />
+                <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">최근 채팅</span>
+                <div className="h-px flex-1 bg-gray-300/50" />
+              </div>
               {sortedChats.length === 0 ? (
-                <p className="text-sm text-gray-400 px-2 py-4 text-center">
-                  채팅 기록이 없습니다
-                </p>
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-400">채팅 기록이 없습니다</p>
+                  <p className="text-xs text-gray-300 mt-1">새 채팅을 시작해보세요</p>
+                </div>
               ) : (
                 sortedChats.map((chat) => {
                   const lastMessage = chat.messages.length > 0
@@ -120,25 +124,29 @@ function ChatSidebarContent({
         </div>
       </nav>
 
-      <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        {!isCollapsed && (
-          <div className="px-4 py-2 border-t border-gray-200">
-            {isAuthenticated() ? (
-              <TextLink
-                color="blue"
-                onClick={handleLogout}
-              >
-                관리자 로그아웃
-              </TextLink>
-            ) : (
-              <TextLink
-                color="blue"
-                onClick={() => navigate(ROUTES.AUTH.LOGIN, { state: { from: location } })}
-              >
-                관리자 로그인
-              </TextLink>
-            )}
-          </div>
+      <div className="border-t border-gray-300/50 pt-3">
+        {isAuthenticated() ? (
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center py-2.5 transition-all duration-200 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 ${
+              isCollapsed ? 'justify-center' : 'gap-3 px-4'
+            }`}
+            title={isCollapsed ? '관리자 로그아웃' : undefined}
+          >
+            <LogOut size={18} />
+            {!isCollapsed && <span className="text-sm font-medium">관리자 로그아웃</span>}
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate(ROUTES.AUTH.LOGIN, { state: { from: location } })}
+            className={`w-full flex items-center py-2.5 transition-all duration-200 rounded-lg text-gray-600 hover:bg-black/10 hover:text-blue-600 ${
+              isCollapsed ? 'justify-center' : 'gap-3 px-4'
+            }`}
+            title={isCollapsed ? '관리자 로그인' : undefined}
+          >
+            <LogIn size={18} />
+            {!isCollapsed && <span className="text-sm font-medium">관리자 로그인</span>}
+          </button>
         )}
       </div>
     </>

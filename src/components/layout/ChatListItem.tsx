@@ -101,10 +101,10 @@ function ChatListItem({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`w-full text-left px-3 py-2 rounded-2xl transition-colors cursor-pointer ${
+        className={`w-full text-left px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
           isSelected
-            ? 'bg-blue-200'
-            : 'hover:bg-gray-300'
+            ? 'bg-blue-200/60'
+            : 'hover:bg-black/10'
         }`}
       >
         <div className="flex items-center justify-between gap-2">
@@ -120,20 +120,22 @@ function ChatListItem({
                 onChange={(e) => setEditedTitle(e.target.value)}
                 onBlur={handleRenameSubmit}
                 onKeyDown={handleKeyDown}
-                className="w-full px-2 py-1 text-sm font-medium border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-2 py-1 text-sm font-medium border border-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
               <p className={`text-sm font-medium truncate ${
                 isSelected
-                  ? 'text-blue-600'
-                  : 'text-gray-800 group-hover:text-blue-600'
+                  ? 'text-blue-700'
+                  : 'text-gray-700 group-hover:text-gray-900'
               }`}>
                 {title}
               </p>
             )}
             {lastMessage && !isRenaming && (
-              <p className="text-xs text-gray-400 mt-1 truncate">
+              <p className={`text-xs mt-0.5 truncate ${
+                isSelected ? 'text-blue-400' : 'text-gray-400'
+              }`}>
                 {lastMessage}
               </p>
             )}
@@ -143,35 +145,35 @@ function ChatListItem({
           <div className="relative flex-shrink-0 self-center" ref={menuRef}>
             {isPinned && !isHovered && !showMenu ? (
               <div className="p-1">
-                <Pin size={16} className="text-gray-800" />
+                <Pin size={14} className="text-blue-500" />
               </div>
             ) : (
-              <div className={`transition-opacity ${isHovered || showMenu ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`transition-opacity duration-150 ${isHovered || showMenu ? 'opacity-100' : 'opacity-0'}`}>
                 <button
                   onClick={handleMenuClick}
-                  className="p-1 hover:bg-gray-400 rounded-full transition-colors"
+                  className="p-1.5 hover:bg-gray-300/70 rounded-lg transition-colors"
                 >
-                  <EllipsisVertical size={16} className="text-gray-600" />
+                  <EllipsisVertical size={14} className="text-gray-500" />
                 </button>
               </div>
             )}
 
             {/* 드롭다운 메뉴 */}
             {showMenu && (
-              <div className="absolute right-0 top-8 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+              <div className="absolute right-0 top-8 w-36 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-10">
                 {onPin && (
                   <button
                     onClick={handlePinClick}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2.5 text-gray-700"
                   >
                     {isPinned ? (
                       <>
-                        <PinOff size={16} />
+                        <PinOff size={14} />
                         <span>고정 해제</span>
                       </>
                     ) : (
                       <>
-                        <Pin size={16} />
+                        <Pin size={14} />
                         <span>고정하기</span>
                       </>
                     )}
@@ -180,18 +182,18 @@ function ChatListItem({
                 {onRename && (
                   <button
                     onClick={handleRenameClick}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2.5 text-gray-700"
                   >
-                    <Pencil size={16} />
+                    <Pencil size={14} />
                     <span>제목 변경</span>
                   </button>
                 )}
                 {onDelete && (
                   <button
                     onClick={handleDeleteClick}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 flex items-center gap-2.5 text-red-500"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                     <span>채팅 삭제</span>
                   </button>
                 )}
