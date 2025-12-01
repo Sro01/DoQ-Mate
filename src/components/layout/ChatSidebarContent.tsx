@@ -8,6 +8,26 @@ import TextLink from '../common/TextLink';
 import { isAuthenticated } from '../../utils/permissions';
 import { clearAuthData } from '../../utils/authStorage';
 
+interface NewChatButtonProps {
+  isCollapsed: boolean;
+  onClick: () => void;
+}
+
+function NewChatButton({ isCollapsed, onClick }: NewChatButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center py-3 text-left transition-all duration-200 rounded-lg ${
+        isCollapsed ? 'justify-center' : 'gap-3 px-4'
+      } text-gray-700 hover:bg-blue-50`}
+      title={isCollapsed ? '새 채팅' : undefined}
+    >
+      <SquarePen size={20} className="text-gray-600" />
+      {!isCollapsed && <span className="font-medium whitespace-nowrap">새 채팅</span>}
+    </button>
+  );
+}
+
 interface ChatSidebarContentProps {
   isCollapsed: boolean;
 }
@@ -63,17 +83,7 @@ function ChatSidebarContent({
 
   return (
     <>
-      <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        {!isCollapsed && (
-          <button
-            onClick={handleNewChat}
-            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-300 rounded-4xl transition-colors"
-          >
-            <SquarePen size={20} className="text-gray-600" />
-            <span className="text-gray-700 font-medium">새 채팅</span>
-          </button>
-        )}
-      </div>
+      <NewChatButton isCollapsed={isCollapsed} onClick={handleNewChat} />
 
       <nav className="mt-6 flex-1 overflow-y-auto">
         <div className={`transition-opacity duration-300 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
