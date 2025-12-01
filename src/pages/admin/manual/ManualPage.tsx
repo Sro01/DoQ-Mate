@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Settings, PencilLine, Trash2 } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
 import ManualFileList from '../../../components/admin/manual/ManualFileList';
@@ -7,14 +8,13 @@ import Input from '../../../components/common/Input';
 import Textarea from '../../../components/common/Textarea';
 import ToggleSwitch from '../../../components/common/ToggleSwitch';
 import Modal from '../../../components/common/Modal';
-import PageHeader from '../../../components/common/PageHeader';
+import PageHero from '../../../components/common/PageHero';
 import type { Chatbot, UpdateChatbotRequest } from '../../../types/admin/chatbot';
 import type { Manual, UploadingFile } from '../../../types/admin/manual';
 import { ROUTES } from '../../../constants/routes';
 import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
 import { useGetChatbotDetail, useUpdateChatbot, useDeleteChatbot } from '../../../hooks/chatbot/useChatbot';
 import { useGetManuals, useUploadManual, useDeleteManual } from '../../../hooks/admin/useManual';
-import { PencilLine, Trash2 } from 'lucide-react';
 
 function ManualPage() {
   const navigate = useNavigate();
@@ -241,12 +241,22 @@ function ManualPage() {
     }
   };
 
+  const heroSection = (
+    <PageHero
+      icon={<Settings size={40} className="text-white" />}
+      title="챗봇 설정"
+      gradient="from-indigo-500 via-indigo-600 to-purple-600"
+    />
+  );
+
   if (isLoadingDetail) {
     return (
-      <main className="flex-1 p-8">
-        <PageHeader title="챗봇 설정" />
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-          <p className="text-gray-500">로딩 중...</p>
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto">
+          {heroSection}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <p className="text-gray-500">로딩 중...</p>
+          </div>
         </div>
       </main>
     );
@@ -254,175 +264,175 @@ function ManualPage() {
 
   if (!chatbot) {
     return (
-      <main className="flex-1 p-8">
-        <PageHeader title="챗봇 설정" />
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-          <p className="text-gray-500">챗봇 정보를 불러올 수 없습니다.</p>
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto">
+          {heroSection}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <p className="text-gray-500">챗봇 정보를 불러올 수 없습니다.</p>
+          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="flex-1 p-8">
-      <PageHeader title="챗봇 설정" />
+    <main className="flex-1 p-8 lg:p-12">
+      <div className="max-w-5xl mx-auto">
+        {heroSection}
 
-      {/* 선택된 챗봇 정보 */}
-      <div className="mb-6">
-        {/* 챗봇 수정/삭제 버튼 */}
-        <div className="flex justify-end gap-3 mb-4">
-          <Button variant="outline" onClick={handleEditClick} icon={<PencilLine size={20} />}>
-            수정
-          </Button>
-          <Button variant="red" onClick={handleDeleteClick} disabled={isDeleting} icon={<Trash2 size={20} />}>
-            삭제
+        {/* 선택된 챗봇 정보 */}
+        <div className="mb-6">
+          {/* 챗봇 수정/삭제 버튼 */}
+          <div className="flex justify-end gap-3 mb-4">
+            <Button variant="outline" onClick={handleEditClick} icon={<PencilLine size={20} />}>
+              수정
+            </Button>
+            <Button variant="red" onClick={handleDeleteClick} disabled={isDeleting} icon={<Trash2 size={20} />}>
+              삭제
+            </Button>
+          </div>
+
+          <ChatbotListProvider
+            onTogglePublic={handleTogglePublic}
+            isUpdating={isUpdating}
+          >
+            <ChatbotTable chatbots={[chatbot]} />
+          </ChatbotListProvider>
+        </div>
+
+        {/* 파일 미리보기/관리 영역 */}
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`transition-all ${isDragging ? 'opacity-50' : ''}`}
+        >
+          <ManualFileList
+            manuals={manuals}
+            uploadingFiles={uploadingFiles}
+            onRemoveFile={handleRemoveFile}
+            onUpdateDisplayName={handleUpdateDisplayName}
+            onDeleteManual={handleDeleteManual}
+            isDeletingManual={isDeletingManual}
+            isLoadingManuals={isLoadingManuals}
+            isDragging={isDragging}
+          />
+        </div>
+
+        {/* PDF 추가 버튼 */}
+        <div className="mb-6">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            pdf 추가
           </Button>
         </div>
 
-        <ChatbotListProvider
-          onTogglePublic={handleTogglePublic}
-          isUpdating={isUpdating}
+        {/* 하단 버튼들 */}
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={uploadingFiles.length === 0 || isUploading}
+          >
+            {isUploading ? '등록 중...' : '등록'}
+          </Button>
+          <Button variant="secondary" onClick={handleCancel}>
+            취소
+          </Button>
+        </div>
+
+        {/* 챗봇 정보 수정 모달 */}
+        <Modal
+          isOpen={showEditModal}
+          title="챗봇 정보 수정"
+          maxWidth="2xl"
+          confirmText={isUpdating ? '수정 중...' : '수정'}
+          cancelText="취소"
+          onConfirm={handleEditSubmit}
+          onCancel={() => setShowEditModal(false)}
+          confirmDisabled={isUpdating}
         >
-          <ChatbotTable chatbots={[chatbot]} />
-        </ChatbotListProvider>
+          <div className="space-y-6">
+            <Input
+              label="챗봇 이름"
+              name="name"
+              type="text"
+              value={editFormData.name || ''}
+              onChange={handleEditInputChange}
+              placeholder="챗봇 이름을 입력하세요"
+              required
+            />
 
-      </div>
+            <Textarea
+              label="설명"
+              id="description"
+              name="description"
+              value={editFormData.description || ''}
+              onChange={handleEditInputChange}
+              placeholder="챗봇에 대한 설명을 입력하세요"
+              rows={3}
+            />
 
-      {/* 파일 미리보기/관리 영역 */}
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`transition-all ${isDragging ? 'opacity-50' : ''}`}
-      >
-        <ManualFileList
-          manuals={manuals}
-          uploadingFiles={uploadingFiles}
-          onRemoveFile={handleRemoveFile}
-          onUpdateDisplayName={handleUpdateDisplayName}
-          onDeleteManual={handleDeleteManual}
-          isDeletingManual={isDeletingManual}
-          isLoadingManuals={isLoadingManuals}
-          isDragging={isDragging}
-        />
-      </div>
+            <Input
+              label="태그"
+              name="tag"
+              type="text"
+              value={editFormData.tag || ''}
+              onChange={handleEditInputChange}
+              placeholder="예: 고객지원, 사내용"
+            />
 
-
-      {/* PDF 추가 버튼 */}
-      <div className="mb-6">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf"
-          multiple
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-        <Button
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          pdf 추가
-        </Button>
-      </div>
-
-
-
-      {/* 하단 버튼들 */}
-      <div className="flex justify-end gap-3">
-        <Button
-          variant="primary"
-          onClick={handleSubmit}
-          disabled={uploadingFiles.length === 0 || isUploading}
-        >
-          {isUploading ? '등록 중...' : '등록'}
-        </Button>
-        <Button variant="secondary" onClick={handleCancel}>
-          취소
-        </Button>
-      </div>
-
-      {/* 챗봇 정보 수정 모달 */}
-      <Modal
-        isOpen={showEditModal}
-        title="챗봇 정보 수정"
-        maxWidth="2xl"
-        confirmText={isUpdating ? '수정 중...' : '수정'}
-        cancelText="취소"
-        onConfirm={handleEditSubmit}
-        onCancel={() => setShowEditModal(false)}
-        confirmDisabled={isUpdating}
-      >
-        <div className="space-y-6">
-          <Input
-            label="챗봇 이름"
-            name="name"
-            type="text"
-            value={editFormData.name || ''}
-            onChange={handleEditInputChange}
-            placeholder="챗봇 이름을 입력하세요"
-            required
-          />
-
-          <Textarea
-            label="설명"
-            id="description"
-            name="description"
-            value={editFormData.description || ''}
-            onChange={handleEditInputChange}
-            placeholder="챗봇에 대한 설명을 입력하세요"
-            rows={3}
-          />
-
-          <Input
-            label="태그"
-            name="tag"
-            type="text"
-            value={editFormData.tag || ''}
-            onChange={handleEditInputChange}
-            placeholder="예: 고객지원, 사내용"
-          />
-
-          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <label className="text-sm font-medium text-gray-900 block mb-1">
-                  공개 여부
-                </label>
-                <p className="text-xs text-gray-500">
-                  {editFormData.is_public
-                    ? '모든 사용자가 이 챗봇을 사용할 수 있습니다'
-                    : '관리자만 이 챗봇을 사용할 수 있습니다'}
-                </p>
-              </div>
-              <div className="flex items-center gap-3 ml-4">
-                <span
-                  className={`text-sm font-medium ${
-                    editFormData.is_public ? 'text-blue-600' : 'text-gray-500'
-                  }`}
-                >
-                  {editFormData.is_public ? '공개' : '비공개'}
-                </span>
-                <ToggleSwitch
-                  checked={editFormData.is_public ?? true}
-                  onChange={handleEditToggleChange}
-                />
+            <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <label className="text-sm font-medium text-gray-900 block mb-1">
+                    공개 여부
+                  </label>
+                  <p className="text-xs text-gray-500">
+                    {editFormData.is_public
+                      ? '모든 사용자가 이 챗봇을 사용할 수 있습니다'
+                      : '관리자만 이 챗봇을 사용할 수 있습니다'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 ml-4">
+                  <span
+                    className={`text-sm font-medium ${
+                      editFormData.is_public ? 'text-blue-600' : 'text-gray-500'
+                    }`}
+                  >
+                    {editFormData.is_public ? '공개' : '비공개'}
+                  </span>
+                  <ToggleSwitch
+                    checked={editFormData.is_public ?? true}
+                    onChange={handleEditToggleChange}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* 챗봇 삭제 확인 모달 */}
-      <Modal
-        isOpen={showDeleteModal}
-        title="챗봇 삭제"
-        message={`'${chatbot.name}' 챗봇을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
-        confirmText="삭제"
-        cancelText="취소"
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setShowDeleteModal(false)}
-      />
+        {/* 챗봇 삭제 확인 모달 */}
+        <Modal
+          isOpen={showDeleteModal}
+          title="챗봇 삭제"
+          message={`'${chatbot.name}' 챗봇을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+          confirmText="삭제"
+          cancelText="취소"
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      </div>
     </main>
   );
 }

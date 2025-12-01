@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Users } from 'lucide-react';
 import type { Admin } from '../../../types/auth/auth';
 import { Table } from '../../../components/common/Table';
 import type { TableColumn } from '../../../components/common/Table';
 import Button from '../../../components/common/Button';
-import PageHeader from '../../../components/common/PageHeader';
+import PageHero from '../../../components/common/PageHero';
 import Modal from '../../../components/common/Modal';
 import { useGetAdmins, useDeleteAdmin } from '../../../hooks/admin/useAdmin';
 
@@ -113,25 +114,31 @@ function AdminListPage() {
 
   return (
     <>
-      <main className="flex-1 p-8">
-        <PageHeader title="관리자 목록" />
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto">
+          <PageHero
+            icon={<Users size={40} className="text-white" />}
+            title="관리자 목록"
+            gradient="from-orange-500 via-orange-600 to-red-600"
+          />
 
-        {fetchError ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <p className="text-red-500">{fetchError}</p>
-            <Button className="mt-4" onClick={loadAdmins}>다시 시도</Button>
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <Table
-              data={admins}
-              columns={columns}
-              keyExtractor={(row) => row.admin_id}
-              isLoading={isLoadingAdmins}
-              emptyMessage="등록된 관리자가 없습니다."
-            />
-          </div>
-        )}
+          {fetchError ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+              <p className="text-red-500">{fetchError}</p>
+              <Button className="mt-4" onClick={loadAdmins}>다시 시도</Button>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <Table
+                data={admins}
+                columns={columns}
+                keyExtractor={(row) => row.admin_id}
+                isLoading={isLoadingAdmins}
+                emptyMessage="등록된 관리자가 없습니다."
+              />
+            </div>
+          )}
+        </div>
       </main>
 
       <Modal

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Bot, Plus } from 'lucide-react';
 import type { Chatbot } from '../../../types/admin/chatbot';
 import Button from '../../../components/common/Button';
-import PageHeader from '../../../components/common/PageHeader';
+import PageHero from '../../../components/common/PageHero';
 import ChatbotTable from '../../../components/admin/chatbot/ChatbotList/ChatbotTable';
 import { ROUTES } from '../../../constants/routes';
 import { useGetChatbots, useUpdateChatbot } from '../../../hooks/chatbot/useChatbot';
 import { ChatbotListProvider } from '../../../contexts/ChatbotListContext';
-import { Plus } from 'lucide-react';
 
 function ChatbotListPage() {
   const navigate = useNavigate();
@@ -45,8 +45,12 @@ function ChatbotListPage() {
 
   return (
     <>
-      <main className="flex-1 p-8">
-          <PageHeader title="챗봇 리스트" />
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto">
+          <PageHero
+            icon={<Bot size={40} className="text-white" />}
+            title="챗봇 리스트"
+          />
 
           <div className="flex justify-end mb-6">
             <Button variant="outline" onClick={handleCreateChatbot} icon={<Plus size={20} />}>
@@ -54,18 +58,19 @@ function ChatbotListPage() {
             </Button>
           </div>
 
-        {isLoadingList ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <p className="text-gray-500">로딩 중...</p>
-          </div>
-        ) : (
-          <ChatbotListProvider
-            onTogglePublic={handleTogglePublic}
-            isUpdating={isUpdating}
-          >
-            <ChatbotTable chatbots={chatbots} />
-          </ChatbotListProvider>
-        )}
+          {isLoadingList ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+              <p className="text-gray-500">로딩 중...</p>
+            </div>
+          ) : (
+            <ChatbotListProvider
+              onTogglePublic={handleTogglePublic}
+              isUpdating={isUpdating}
+            >
+              <ChatbotTable chatbots={chatbots} />
+            </ChatbotListProvider>
+          )}
+        </div>
       </main>
     </>
   );

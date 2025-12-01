@@ -45,7 +45,7 @@ function Table<T>({
     <div className="overflow-x-auto">
       <table className={`w-full text-sm ${fixedLayout ? 'table-fixed' : ''}`}>
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-blue-50">
             {columns.map((column, colIndex) => (
               <th
                 key={column.key}

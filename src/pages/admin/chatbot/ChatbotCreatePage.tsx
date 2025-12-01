@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Bot, Sparkles, Settings } from 'lucide-react';
 import Input from '../../../components/common/Input';
 import Textarea from '../../../components/common/Textarea';
 import ToggleSwitch from '../../../components/common/ToggleSwitch';
 import Button from '../../../components/common/Button';
-import PageHeader from '../../../components/common/PageHeader';
+import PageHero from '../../../components/common/PageHero';
+import SectionTitle from '../../../components/common/SectionTitle';
 import { ROUTES } from '../../../constants/routes';
 import { useCreateChatbot } from '../../../hooks/chatbot/useChatbot';
 import type { CreateChatbotRequest } from '../../../types/admin/chatbot';
@@ -70,19 +72,24 @@ function ChatbotCreatePage() {
   };
 
   return (
-    <main className="flex-1 p-8">
-      <PageHeader title="챗봇 생성" />
-
+    <main className="flex-1 p-8 lg:p-12">
       <div className="max-w-3xl mx-auto">
-        {/* Form Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Basic Information Section */}
-            <div className="space-y-6">
-              <div className="border-b border-gray-200 pb-3">
-                <h2 className="text-lg font-semibold text-gray-900">기본 정보</h2>
-              </div>
+        <PageHero
+          icon={<Bot size={40} className="text-white" />}
+          title="새 챗봇 만들기"
+        />
 
+        <form onSubmit={handleSubmit} className="space-y-10">
+          {/* Section 1: Basic Info */}
+          <section>
+            <SectionTitle
+              icon={<Sparkles size={16} className="text-blue-600" />}
+              iconBgColor="bg-blue-100"
+            >
+              기본 정보
+            </SectionTitle>
+
+            <div className="space-y-6 pl-11">
               <Input
                 label="챗봇 이름"
                 name="name"
@@ -100,44 +107,9 @@ function ChatbotCreatePage() {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="챗봇에 대한 설명을 입력하세요"
-                rows={1}
+                placeholder="이 챗봇이 어떤 역할을 하는지 설명해주세요"
+                rows={3}
               />
-            </div>
-
-            {/* Settings Section */}
-            <div className="space-y-6">
-              <div className="border-b border-gray-200 pb-3">
-                <h2 className="text-lg font-semibold text-gray-900">설정</h2>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <label className="text-sm font-medium text-gray-900 block mb-1">
-                      공개 여부
-                    </label>
-                    <p className="text-xs text-gray-500">
-                      {formData.is_public
-                        ? '모든 사용자가 이 챗봇을 사용할 수 있습니다'
-                        : '관리자만 이 챗봇을 사용할 수 있습니다'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 ml-4">
-                    <span
-                      className={`text-sm font-medium ${
-                        formData.is_public ? 'text-blue-600' : 'text-gray-500'
-                      }`}
-                    >
-                      {formData.is_public ? '공개' : '비공개'}
-                    </span>
-                    <ToggleSwitch
-                      checked={formData.is_public ?? true}
-                      onChange={handleToggleChange}
-                    />
-                  </div>
-                </div>
-              </div>
 
               <Input
                 label="태그"
@@ -148,23 +120,68 @@ function ChatbotCreatePage() {
                 placeholder="예: 고객지원, 사내용"
               />
             </div>
+          </section>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleCancel}
-                disabled={isLoading}
-              >
-                취소
-              </Button>
-              <Button type="submit" variant="primary" disabled={isLoading}>
-                {isLoading ? '생성 중...' : '챗봇 생성'}
-              </Button>
+          <div className="border-t border-gray-200" />
+
+          {/* Section 2: Settings */}
+          <section>
+            <SectionTitle
+              icon={<Settings size={16} className="text-purple-600" />}
+              iconBgColor="bg-purple-100"
+            >
+              공개 설정
+            </SectionTitle>
+
+            <div className="pl-11">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100/50 border border-gray-200">
+                <div>
+                  <div className="font-medium text-gray-900 mb-1">공개 여부</div>
+                  <p className="text-sm text-gray-500">
+                    {formData.is_public
+                      ? '모든 사용자가 이 챗봇을 사용할 수 있습니다'
+                      : '관리자만 이 챗봇을 사용할 수 있습니다'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`
+                    px-3 py-1 rounded-full text-sm font-medium transition-all
+                    ${formData.is_public
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-gray-200 text-gray-600'}
+                  `}>
+                    {formData.is_public ? '공개' : '비공개'}
+                  </span>
+                  <ToggleSwitch
+                    checked={formData.is_public ?? true}
+                    onChange={handleToggleChange}
+                  />
+                </div>
+              </div>
             </div>
-          </form>
-        </div>
+          </section>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              size="large"
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
+              취소
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="large"
+              disabled={isLoading}
+            >
+              {isLoading ? '생성 중...' : '챗봇 생성'}
+            </Button>
+          </div>
+        </form>
       </div>
     </main>
   );

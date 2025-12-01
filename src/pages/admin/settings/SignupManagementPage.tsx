@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { UserPlus } from 'lucide-react';
 import type { Signup } from '../../../types/auth/signup';
 import { Table } from '../../../components/common/Table';
 import type { TableColumn } from '../../../components/common/Table';
 import Button from '../../../components/common/Button';
-import PageHeader from '../../../components/common/PageHeader';
+import PageHero from '../../../components/common/PageHero';
 import Modal from '../../../components/common/Modal';
 import { useGetSignups, useApproveSignup, useRejectSignup } from '../../../hooks/signup/useSignup';
 
@@ -143,17 +144,23 @@ function SignupManagementPage() {
 
   return (
     <>
-      <main className="flex-1 p-8">
-        <PageHeader title="가입 신청 관리" />
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <Table
-            data={signups}
-            columns={columns}
-            keyExtractor={(row) => row.signup_id}
-            isLoading={isLoadingList}
-            emptyMessage="대기 중인 가입 신청이 없습니다."
+      <main className="flex-1 p-8 lg:p-12">
+        <div className="max-w-5xl mx-auto">
+          <PageHero
+            icon={<UserPlus size={40} className="text-white" />}
+            title="가입 신청 관리"
+            gradient="from-violet-500 via-violet-600 to-purple-600"
           />
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <Table
+              data={signups}
+              columns={columns}
+              keyExtractor={(row) => row.signup_id}
+              isLoading={isLoadingList}
+              emptyMessage="대기 중인 가입 신청이 없습니다."
+            />
+          </div>
         </div>
       </main>
 
